@@ -78,7 +78,7 @@ public class ImageUtils {
 //		System.out.println("padw = " + padw + ", padh = " + padh);
 		int pw = (width - padw * 2) / code.length(), ph = height - padh * 2; // 每个字母的宽度 和 高度
 //		System.out.println("pw = " + pw + ", ph = " + ph);
-		int maxAngle = 25; // 最大旋转角度
+		int maxAngle = 45; // 最大旋转角度
 		Random rand = new Random();
 		for(int i = 0; i < code.length(); i++) {
 			String s = code.substring(i, i + 1);
