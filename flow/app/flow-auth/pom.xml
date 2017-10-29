@@ -72,7 +72,7 @@
 		
 		<dependency>
 			<groupId>me.codetalk</groupId>
-			<artifactId>flow-utils</artifactId>
+			<artifactId>codetalk-utils</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 
