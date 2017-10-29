@@ -1,0 +1,47 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.codetalk.ssc.fnd.mapper.LookupMapper">
+
+	<resultMap type="me.codetalk.ssc.fnd.pojo.Lookup" id="lkpResultMap">
+		<result property="id" column="lookup_id"></result>
+		<result property="category" column="lookup_category"></result>
+		<result property="code" column="lookup_code"></result>
+		<result property="value" column="lookup_value"></result>
+		<result property="order" column="lookup_order"></result>
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+	    lookup_id, lookup_category, lookup_code, lookup_value, lookup_order, create_date
+  	</sql>
+	
+	<select id="selectByCategory" parameterType="java.lang.String" resultMap="lkpResultMap"> 
+		select <include refid="Base_Column_List" />
+		  from fnd_lookups
+		 where lookup_category = #{category}
+		 order by lookup_order asc
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,74 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.codetalk.ssc.fnd.mapper.TagMapper">
+
+	<resultMap type="me.codetalk.ssc.fnd.pojo.Tag" id="tagResultMap">
+		<result property="id" column="tag_id"></result>
+		<result property="text" column="tag_text"></result>
+		<result property="groupId" column="tag_group"></result>
+		<result property="hits" column="tag_hits"></result>
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+	
+	<resultMap type="me.codetalk.ssc.fnd.pojo.TagVO" id="tagVOResultMap" extends="tagResultMap">
+		<result property="groupTitle" column="group_title"></result>
+	</resultMap>
+	
+	<select id="selectAllSimple" resultMap="tagResultMap">
+		select tag_id, tag_text, tag_hits, create_date
+		  from fnd_tags 
+	</select>
+	
+	<!-- 
+	<select id="selectAllTags" resultMap="tagVOResultMap">
+		select t.tag_id, t.tag_text, t.tag_hits, t.create_date, t.tag_group, tgs.group_title
+		  from fnd_tags t, 
+		  (
+			 select group_id, group_title, sum( ifnull( tag_hits, 0 ) ) group_hits 
+		       from fnd_tag_groups left join fnd_tags on group_id = tag_group
+		      group by group_id, group_title
+		  ) tgs
+		 where t.tag_group = tgs.group_id
+		 order by tgs.group_hits desc, t.tag_group asc, t.tag_hits desc
+	</select>
+	 -->
+	
+	<select id="selectTagsByPos" parameterType="Integer" resultMap="tagVOResultMap"> 
+		select t.tag_id, t.tag_text, t.tag_hits, t.create_date, tgs.group_id tag_group, tgs.group_title
+		  from fnd_tags t, fnd_group_tags gt1,
+		  (
+			 select tg.group_id, tg.group_title, sum( ifnull( tags.tag_hits, 0 ) ) group_hits 
+		     from fnd_position_tag_group ptg
+				left join fnd_tag_groups tg on ptg.tag_group_id = tg.group_id
+	        left join fnd_group_tags gt on tg.group_id = gt.group_id
+	        left join fnd_tags tags on gt.tag_id = tags.tag_id
+	        where ptg.position_type = #{posType}
+		      group by tg.group_id, tg.group_title
+		  ) tgs
+		 where tgs.group_id = gt1.group_id and gt1.tag_id = t.tag_id
+		 order by tgs.group_hits desc, tgs.group_id asc, t.tag_hits desc
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

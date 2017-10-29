@@ -1,0 +1,51 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.codetalk.ssc.pofo.mapper.UserFollowMapper">
+
+	<resultMap type="me.codetalk.ssc.pofo.pojo.UserFollow" id="followResultMap">
+		<result property="id" column="follow_id"></result>
+		<result property="userId" column="user_id"></result>
+		<result property="userFollowed" column="user_followed"></result>
+		<result property="deleteMark" column="delete_mark"></result>
+		<result property="updateDate" column="update_date"></result>
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+	    follow_id, user_id, user_followed, delete_mark, update_date, create_date 
+  	</sql>
+	
+	<insert id="insertFollow" parameterType="me.codetalk.ssc.pofo.pojo.UserFollow" useGeneratedKeys="true" keyProperty="id" keyColumn="follow_id">
+		insert into pf_follows (user_id, user_followed)
+		values (
+			#{userId}, #{userFollowed}
+		)
+	</insert>
+	
+	<select id="selectFollow" parameterType="map" resultMap="followResultMap">
+		select <include refid="Base_Column_List" />
+		  from pf_follows
+		 where user_id = #{userId}
+		   and user_followed = #{userFollow}
+		   and delete_mark = 0
+	</select>
+	
+	<update id="markDelete" parameterType="Long">
+		update pf_follows 
+		   set delete_mark = 1, update_date = CURRENT_TIMESTAMP
+		 where follow_id = #{followId}
+	</update>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

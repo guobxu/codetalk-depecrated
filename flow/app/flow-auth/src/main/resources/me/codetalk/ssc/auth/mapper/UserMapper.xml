@@ -1,0 +1,83 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.codetalk.ssc.auth.mapper.UserMapper">
+
+	<resultMap type="me.codetalk.ssc.auth.pojo.User" id="userResultMap">
+		<result property="id" column="user_id"></result>
+		<result property="login" column="user_login"></result>
+		<result property="loginLower" column="user_login_lower"></result>
+		<result property="mobile" column="user_mobile"></result>
+		<result property="mobileVerified" column="mobile_verified"></result>
+		<result property="mail" column="user_mail"></result>
+		<result property="mailLower" column="user_mail_lower"></result>
+		<result property="mailVerified" column="mail_verified"></result>
+		<result property="status" column="user_status"></result>
+		<result property="passwd" column="user_passwd"></result>
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+	    user_id, user_login, user_login_lower, user_mobile, mobile_verified, 
+	 	user_mail, user_mail_lower, mail_verified, user_status, user_passwd, create_date
+  	</sql>
+	
+	<insert id="insertUser" parameterType="me.codetalk.ssc.auth.pojo.User" useGeneratedKeys="true" keyProperty="id" keyColumn="user_id">
+		insert into auth_users (user_login, user_login_lower, user_mobile, mobile_verified, 
+								user_mail, user_mail_lower, mail_verified, user_passwd)
+		values (
+				#{login}, #{loginLower}, #{mobile}, #{mobileVerified}, 
+				#{mail}, #{mailLower}, #{mailVerified}, #{passwd}
+		)
+	</insert>
+	
+	<select id="selectUserByInput" parameterType="String" resultMap="userResultMap">
+		select <include refid="Base_Column_List" />
+		  from auth_users
+		 where user_login_lower = #{input}
+		 	or user_mail_lower = #{input}
+		    or user_mobile = #{input}
+	</select>
+	
+	<select id="selectUserByOr" parameterType="map" resultMap="userResultMap">
+		select <include refid="Base_Column_List" />
+		  from auth_users
+		 where user_login_lower = #{login}
+		 	or user_mail_lower = #{mail}
+		    or user_mobile = #{mobile}
+	</select>
+	
+	<select id="selectUserByLogin" parameterType="String" resultMap="userResultMap">
+		select <include refid="Base_Column_List" />
+		  from auth_users
+		 where user_login_lower = #{login}
+	</select>
+	
+	<select id="selectUserByMail" parameterType="String" resultMap="userResultMap">
+		select <include refid="Base_Column_List" />
+		  from auth_users
+		 where user_mail_lower = #{mail}
+	</select>
+	
+	<select id="selectUserByMobile" parameterType="String" resultMap="userResultMap">
+		select <include refid="Base_Column_List" />
+		  from auth_users
+		 where user_mobile = #{mobile}
+	</select>
+	
+	<update id="updateUserPwd" parameterType="map">
+		update auth_users set user_passwd = #{newPwd} where user_id = #{userId}
+	</update>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

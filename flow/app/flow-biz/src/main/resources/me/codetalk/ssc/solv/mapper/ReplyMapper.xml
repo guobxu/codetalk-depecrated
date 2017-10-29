@@ -1,0 +1,72 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.codetalk.ssc.solv.mapper.ReplyMapper">
+
+	<resultMap type="me.codetalk.ssc.solv.pojo.Reply" id="replyResultMap">
+		<result property="id" column="reply_id"></result>
+		<result property="questId" column="quest_id"></result>
+		<result property="userId" column="user_id"></result>
+		<result property="content" column="reply_content"></result>
+		<result property="seq" column="reply_seq"></result>
+		<result property="accepted" column="reply_accepted"></result>
+		<result property="acceptDate" column="accept_date"></result>
+		<result property="commentThread" column="comment_thread"></result>
+		<result property="notifyUsers" column="notify_users"></result>
+		<result property="spamMark" column="spam_mark"></result>
+		<result property="updateBy" column="update_by"></result>
+		<result property="updateDate" column="update_date"></result>
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+	
+	<resultMap type="me.codetalk.ssc.solv.pojo.ReplyVO" extends="replyResultMap" id="replyVOResultMap">
+		<result property="userLogin" column="user_login"></result>
+        <result property="userName" column="user_name"></result>
+        <result property="userProfile" column="user_profile"></result>
+        <result property="questCreateBy" column="quest_createby"></result>
+        <result property="questStatus" column="quest_status"></result>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+	    r.reply_id, r.quest_id, r.user_id, r.reply_content, r.reply_seq, r.reply_accepted, 
+	    r.accept_date, r.comment_thread, r.notify_users, r.spam_mark, r.update_date, r.update_by, r.create_date
+  	</sql>
+	
+	<insert id="insertReply" parameterType="me.codetalk.ssc.solv.pojo.Reply" useGeneratedKeys="true" keyProperty="id" keyColumn="reply_id">
+		insert into sv_replies(quest_id, user_id, reply_content, comment_thread, notify_users, update_by)
+		values (
+			#{questId}, #{userId}, #{content}, #{commentThread}, #{notifyUsers}, #{updateBy}
+		)
+	</insert>
+	
+	<select id="selectReplyById" parameterType="Long" resultMap="replyResultMap">
+		select <include refid="Base_Column_List" />
+		  from sv_replies r
+		 where r.reply_id = #{id}
+	</select>
+	
+	<select id="selectReplyVOById" parameterType="Long" resultMap="replyVOResultMap">
+		select <include refid="Base_Column_List" />,
+			   q.user_id quest_createby, 
+			   q.quest_status
+		  from sv_replies r, sv_questions q
+		 where reply_id = #{id}
+		   and r.quest_id = q.quest_id
+	</select>
+	
+	<update id="updateAccepted" parameterType="Long">
+		update sv_replies set reply_accepted = 1 where reply_id = #{id}
+	</update>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

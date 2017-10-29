@@ -1,0 +1,52 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.codetalk.ssc.fnd.mapper.FndUserMapper">
+
+	<resultMap type="me.codetalk.ssc.fnd.pojo.FndUser" id="userResultMap">
+		<result property="userId" column="user_id"></result>
+		<result property="userName" column="user_name"></result>
+		<result property="userProfile" column="user_profile"></result>
+		<result property="profileStatus" column="profile_status"></result>
+		<result property="positionType" column="position_type"></result>
+		<result property="attribute1" column="attribute1"></result>
+		<result property="attribute2" column="attribute2"></result>
+		<result property="attribute3" column="attribute3"></result>
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+	    user_id, user_login, user_name, user_profile, profile_status, position_type, attribute1, attribute2, attribute3, create_date
+  	</sql>
+	
+	<insert id="insertUser" parameterType="me.codetalk.ssc.fnd.pojo.FndUser">
+		insert into fnd_users (user_id, user_login, user_name, user_profile, profile_status, position_type)
+		values (
+				#{userId}, #{userLogin}, #{userName}, #{userProfile}, #{profileStatus}, #{positionType}
+		)
+	</insert>
+	
+	<select id="selectUserById" parameterType="Integer" resultMap="userResultMap">
+		select <include refid="Base_Column_List" />
+		  from fnd_users
+		 where user_id = #{userId}
+	</select>
+	
+	<update id="updateUser" parameterType="me.codetalk.ssc.fnd.pojo.FndUser"> 
+		update fnd_users 
+		   set user_name = #{userName}, user_profile = #{userProfile}, profile_status = #{profileStatus}, position_type = #{positionType}
+		 where user_id = #{userId}
+	</update>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

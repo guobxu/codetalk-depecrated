@@ -1,0 +1,155 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.codetalk.ssc.pofo.mapper.PostMapper">
+
+	<resultMap type="me.codetalk.ssc.pofo.pojo.Post" id="postResultMap">
+		<result property="id" column="post_id"></result>
+		<result property="userId" column="user_id"></result>
+		<result property="type" column="post_type"></result>
+		<result property="content" column="post_content"></result>
+		<result property="referPost" column="post_id_refer"></result>
+		<result property="referComment" column="comment_id_refer"></result>
+		<result property="notifyUsers" column="notify_users"></result>
+		<result property="postRefers" column="post_refers"></result>
+		<result property="postLikes" column="post_likes"></result>
+		<result property="postComments" column="post_comments"></result>
+		<result property="postViews" column="post_views"></result>
+		<result property="createDate" column="create_date"></result>
+		<collection property="imgList" ofType="me.codetalk.ssc.pofo.pojo.PostImg">
+			<result property="id" column="img_id"></result>
+			<result property="url" column="img_url"></result>
+			<result property="seq" column="img_seq"></result>
+			<result property="createDate" column="img_create_date"></result>
+		</collection>
+	</resultMap>
+	
+	<!--  
+	<resultMap type="com.ssc.pofo.pojo.Post" id="postReferResultMap">
+		<result property="id" column="post_id_refer"></result>
+		<result property="content" column="post_content_refer"></result>
+	</resultMap>
+	
+	<resultMap type="com.ssc.pofo.pojo.Comment" id="commentReferResultMap">
+		<result property="id" column="comment_id_refer"></result>
+		<result property="content" column="comment_content_refer"></result>
+	</resultMap>
+	-->
+
+	<resultMap id="postVOResultMap" type="me.codetalk.ssc.pofo.pojo.PostVO" extends="postResultMap">
+		<result property="userName" column="user_name"></result>
+		<result property="userLogin" column="user_login"></result>
+		<result property="userProfile" column="user_profile"></result>
+		<result property="postLoginRefer" column="post_login_refer"></result>
+		<result property="postNameRefer" column="post_name_refer"></result>
+
+		<result property="postIdRefer" column="post_id_refer"></result>
+		<result property="postContentRefer" column="post_content_refer"></result>
+		
+		<!-- 0920: 去掉评论类型转帖
+		<result property="commentIdRefer" column="comment_id_refer"></result>
+		<result property="commentContentRefer" column="comment_content_refer"></result>
+		<result property="commentLoginRefer" column="comment_login_refer"></result>
+		<result property="commentNameRefer" column="comment_name_refer"></result>
+		<result property="commentLoginReply" column="comment_login_reply"></result>
+		<result property="commentNameReply" column="comment_name_reply"></result>
+		 -->
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+	    post_id, user_id, post_type, post_content, post_id_refer, comment_id_refer, 
+	    notify_users, post_refers, post_likes, post_comments, post_views, create_date
+  	</sql>
+	
+	<insert id="insertPost" parameterType="me.codetalk.ssc.pofo.pojo.Post" useGeneratedKeys="true" keyProperty="id" keyColumn="post_id">
+		insert into pf_posts (user_id, post_type, post_content, post_id_refer, comment_id_refer, notify_users)
+		values (
+			#{userId}, #{type}, #{content}, #{referPost}, #{referComment}, #{notifyUsers}
+		)
+	</insert>
+	
+	<!-- 0920: 去掉评论类型转帖
+	<select id="selectUserPost" parameterType="map" resultMap="postVOResultMap">
+		   select p1.post_id, p1.user_id, p1.post_type, p1.post_content, p1.post_id_refer, p1.comment_id_refer, 
+					 p1.post_refers, p1.post_likes, p1.post_comments, p1.create_date, u1.user_name, u1.user_login, u1.user_profile,  
+					 pi.img_id, pi.img_url, pi.img_seq, pi.create_date img_create_date, 
+					 p2.user_id post_user_refer, p2.post_content post_content_refer, u2.user_name post_name_refer, u2.user_login post_login_refer,
+					 u3.user_name comment_name_refer, u3.user_login comment_login_refer, 
+					 c.comment_content comment_content_refer, u4.user_name comment_name_reply, u4.user_login comment_login_reply
+			from pf_posts p1
+		 left join fnd_users u1 on p1.user_id = u1.user_id
+		 left join pf_post_imgs pi on p1.post_id = pi.post_id
+		 left join pf_posts p2 on p1.post_id_refer = p2.post_id
+		 left join fnd_users u2 on p2.user_id = u2.user_id
+		 left join pf_comments c on p1.comment_id_refer = c.comment_id
+		 left join fnd_users u3 on c.user_id = u3.user_id
+		 left join fnd_users u4 on c.user_id_reply = u4.user_id
+			   where p1.user_id = #{userId}
+			order by p1.create_date desc, pi.img_seq asc
+				 limit #{begin}, #{count}
+	</select>
+	 -->
+	 
+	<select id="selectUserPost" parameterType="map" resultMap="postVOResultMap">
+		   select p1.post_id, p1.user_id, p1.post_type, p1.post_content, p1.post_id_refer, 
+					 p1.post_refers, p1.post_likes, p1.post_comments, p1.post_views, p1.create_date, u1.user_name, u1.user_login, u1.user_profile,  
+					 pi.img_id, pi.img_url, pi.img_seq, pi.create_date img_create_date, 
+					 p2.user_id post_user_refer, p2.post_content post_content_refer, u2.user_name post_name_refer, u2.user_login post_login_refer
+			from pf_posts p1
+		 left join fnd_users u1 on p1.user_id = u1.user_id
+		 left join pf_post_imgs pi on p1.post_id = pi.post_id
+		 left join pf_posts p2 on p1.post_id_refer = p2.post_id
+		 left join fnd_users u2 on p2.user_id = u2.user_id
+			   where p1.user_id = #{userId}
+			order by p1.create_date desc, pi.img_seq asc
+				 limit #{begin}, #{count}
+	</select>
+	
+	<select id="listReadByUser" parameterType="map" resultMap="postVOResultMap">
+		select p1.post_id, p1.user_id, p1.post_type, p1.post_content, p1.post_id_refer, 
+					 p1.post_refers, p1.post_likes, p1.post_comments, p1.post_views, p1.create_date, u1.user_name, u1.user_login, u1.user_profile,  
+					 pi.img_id, pi.img_url, pi.img_seq, pi.create_date img_create_date, 
+					 p2.user_id post_user_refer, p2.post_content post_content_refer, u2.user_name post_name_refer, u2.user_login post_login_refer
+		  from pf_follows pff 
+		 inner join pf_posts p1 on pff.user_followed = p1.user_id and pff.delete_mark = 0
+		  left join fnd_users u1 on p1.user_id = u1.user_id
+		  left join pf_post_imgs pi on p1.post_id = pi.post_id
+		  left join pf_posts p2 on p1.post_id_refer = p2.post_id
+		  left join fnd_users u2 on p2.user_id = u2.user_id
+		 where pff.user_id = #{userId}
+		 ORDER BY p1.create_date desc
+		 limit #{begin}, #{count}
+	</select>
+	
+	<select id="selectPostById" parameterType="Long" resultMap="postResultMap">
+		select <include refid="Base_Column_List" /> 
+		  from pf_posts 
+		 where post_id = #{postId}
+	</select>
+	
+	<select id="selectPostVOById" parameterType="Long" resultMap="postVOResultMap">
+		select p1.post_id, p1.user_id, p1.post_type, p1.post_content, p1.post_id_refer, 
+					 p1.post_refers, p1.post_likes, p1.post_comments, p1.post_views, p1.create_date, u1.user_name, u1.user_login, u1.user_profile,  
+					 pi.img_id, pi.img_url, pi.img_seq, pi.create_date img_create_date, 
+					 p2.user_id post_user_refer, p2.post_content post_content_refer, u2.user_name post_name_refer, u2.user_login post_login_refer
+		  from pf_posts p1
+		  left join fnd_users u1 on p1.user_id = u1.user_id
+		  left join pf_post_imgs pi on p1.post_id = pi.post_id
+		  left join pf_posts p2 on p1.post_id_refer = p2.post_id
+		  left join fnd_users u2 on p2.user_id = u2.user_id
+		 where p1.post_id = #{postId}
+	</select>
+	
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

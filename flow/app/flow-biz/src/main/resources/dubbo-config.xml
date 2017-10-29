@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	    http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	
+	<dubbo:service interface="me.codetalk.ssc.fnd.service.IFndService" ref="fndService"/>
+	
+	<dubbo:service interface="me.codetalk.ssc.pofo.service.IPofoService" ref="pofoService"/>
+	
+	<dubbo:service interface="me.codetalk.ssc.solv.service.ISolvService" ref="solvService"/>
+	
+	<dubbo:reference interface="me.codetalk.ssc.auth.service.IAuthService" id="authService" retries="0" check="false" timeout="20000"></dubbo:reference>
+
+</beans>

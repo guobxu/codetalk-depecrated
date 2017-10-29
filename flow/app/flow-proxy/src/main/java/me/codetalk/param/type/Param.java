@@ -1,0 +1,17 @@
+package me.codetalk.param.type;
+
+public interface Param {
+
+	// 参数名称
+	public String getName();
+	
+	// 是否必须
+	public boolean isRequired();
+	
+	// 参数是否合法
+	public boolean isValid(Object obj);
+	
+	// 是否为数组参数
+	public boolean isList();
+	
+}

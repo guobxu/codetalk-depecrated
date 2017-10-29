@@ -1,0 +1,76 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.codetalk.ssc.solv.mapper.QuestCmntMapper">
+
+	<resultMap type="me.codetalk.ssc.solv.pojo.Comment" id="cmntResultMap">
+		<result property="id" column="comment_id"></result>
+		<result property="userId" column="user_id"></result>
+		<result property="questId" column="quest_id"></result>
+		<result property="replyId" column="reply_id"></result>
+		<result property="commentReply" column="comment_reply"></result>
+		<result property="content" column="comment_content"></result>
+		<result property="seq" column="comment_seq"></result>
+		<result property="notifyUsers" column="notify_users"></result>
+		<result property="thread" column="comment_thread"></result>
+		<result property="spamMark" column="spam_mark"></result>
+		<result property="createDate" column="create_date"></result>
+		<result property="updateDate" column="update_date"></result>
+		<result property="updateBy" column="update_by"></result>
+	</resultMap>
+	
+	<resultMap type="me.codetalk.ssc.solv.pojo.CommentVO" extends="cmntResultMap" id="cmntVOResultMap">
+		<result property="userName" column="user_name"></result>
+		<result property="userLogin" column="user_login"></result>
+		<result property="userProfile" column="user_profile"></result>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+	    comment_id, user_id, quest_id, reply_id, comment_reply, comment_content, 
+	    comment_seq, comment_thread, notify_users, spam_mark, update_date, update_by, create_date
+	</sql>
+	
+	<insert id="insertComment" parameterType="me.codetalk.ssc.solv.pojo.Comment" useGeneratedKeys="true" keyProperty="id" keyColumn="comment_id">
+		insert into sv_comments (user_id,quest_id,reply_id,comment_reply,comment_content,
+						comment_thread,notify_users,update_by)
+		values (#{userId}, #{questId}, #{replyId}, #{commentReply}, #{content}, 
+				#{thread}, #{notifyUsers}, #{updateBy})
+	</insert>
+	
+	<select id="selectCommentById" parameterType="Long" resultMap="cmntResultMap">
+		select <include refid="Base_Column_List" />
+		  from sv_comments 
+		 where comment_id = #{cmntId}
+	</select>
+	
+	<select id="selectCommentVOByQuest" parameterType="Long" resultMap="cmntVOResultMap">
+		select comment_id, comment_content, c.create_date, 
+			   fu.user_login, fu.user_name, fu.user_profile
+		  from sv_comments c, fnd_users fu
+		 where c.quest_id = #{questId}
+		   and c.reply_id is NULL  
+		   and c.user_id = fu.user_id
+		 order by c.create_date asc
+	</select>
+	
+	<select id="selectCommentVOByReply" parameterType="Long" resultMap="cmntVOResultMap">
+		select comment_id, comment_content, c.create_date, 
+			   fu.user_login, fu.user_name, fu.user_profile
+		  from sv_comments c, fnd_users fu
+		 where c.reply_id = #{replyId} 
+		   and c.user_id = fu.user_id
+		 order by c.create_date asc
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

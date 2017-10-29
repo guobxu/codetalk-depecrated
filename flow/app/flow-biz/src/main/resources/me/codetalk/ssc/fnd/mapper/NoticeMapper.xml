@@ -1,0 +1,118 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.codetalk.ssc.fnd.mapper.NoticeMapper">
+
+	<resultMap type="me.codetalk.ssc.fnd.pojo.Notice" id="noticeResultMap">
+		<result property="id" column="notice_id"></result>
+		<result property="userId" column="user_id"></result>
+		<result property="type" column="notice_type"></result>
+		<result property="subType" column="notice_subtype"></result>
+		
+		<result property="fromUser" column="from_user_id"></result>
+		
+		<result property="content" column="notice_content"></result>
+		<result property="dtlContent" column="notice_dtl_content"></result>
+		
+		<result property="isApp" column="is_app"></result>
+		<result property="appStatus" column="app_status"></result>
+		<result property="isPush" column="is_push"></result>
+		<result property="pushStatus" column="push_status"></result>
+		
+		<result property="attr1" column="attr1"></result>
+		<result property="attr2" column="attr2"></result>
+		<result property="attr3" column="attr3"></result>
+		<result property="attr4" column="attr4"></result>
+		<result property="attr5" column="attr5"></result>
+		
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+
+	<insert id="insertNotice" parameterType="me.codetalk.ssc.fnd.pojo.Notice" useGeneratedKeys="true" keyProperty="id" keyColumn="notice_id">
+		INSERT INTO fnd_notice(
+		   user_id
+		  ,notice_type
+		  ,notice_subtype
+		  ,from_user_id
+		  ,notice_content
+		  ,notice_dtl_content
+		  ,is_app
+		  ,is_push
+		  ,attr1
+		  ,attr2
+		  ,attr3
+		  ,attr4
+		  ,atr5
+		) VALUES (
+		   #{userId}
+		  ,#{type}
+		  ,#{subType}
+		  ,#{fromUser}
+		  ,#{content}
+		  ,#{dtlContent}
+		  ,#{isApp}
+		  ,#{isPush}
+		  ,#{attr1}
+		  ,#{attr2}
+		  ,#{attr3}
+		  ,#{attr4}
+		  ,#{attr5}
+		)
+	</insert>
+	
+	<insert id="insertNoticeList" parameterType="java.util.List">
+		INSERT INTO fnd_notice(user_id,notice_type,notice_subtype, from_user_id,
+							   notice_content,notice_dtl_content,is_app,is_push,attr1, attr2, attr3, attr4, attr5) 
+		VALUES
+			<foreach collection ="list" item="notice" index= "index" separator =",">
+			(
+				#{notice.userId},#{notice.type},#{notice.subType},#{notice.fromUser},
+			 	#{notice.content},#{notice.dtlContent},#{notice.isApp},#{notice.isPush},#{notice.isSms},
+			 	#{attr1},#{attr2},#{notice.isSms},#{notice.isSms},#{notice.isSms}
+			)
+			</foreach>	   
+	</insert>
+	
+	<select id="countAppUnreadPerType" parameterType="Integer" resultType="java.util.Map">
+		select b.notice_type notice_type, sum(if(b.app_status=1, 1, 0)) new_count 
+		  from fnd_notice b 
+		 where b.is_app = 'Y'
+		   and b.user_id = #{userId}
+		 group by b.notice_type
+	</select>
+	
+	<select id="countAppUnread" parameterType="Integer" resultType="Integer">
+		select count(1)
+		  from fnd_notice b 
+		 where b.is_app = 'Y'
+		   and b.user_id = #{userId}
+		   and b.app_status = 1
+	</select>
+	
+	<select id="selectAppNoticeList" parameterType="java.util.Map" resultMap="noticeResultMap">
+		select notice_id, user_id, notice_type, notice_subtype,
+			 from_user_id, create_date, notice_content, notice_dtl_content, app_status, reply_code, reply_content
+		  from fnd_notice 
+		 where user_id = #{userId} 
+		   and is_app = 'Y'
+		 order by create_date desc
+		 limit #{begin}, #{count}
+	</select>
+	
+	<update id="updateAppReadByUser" parameterType="Long">
+		update fnd_notice 
+		   set app_status = 2
+		 where app_status = 1
+		   and user_id = #{userId}
+	</update>
+	
+</mapper>
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,76 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.codetalk.ssc.pofo.mapper.CommentMapper">
+
+	<resultMap type="me.codetalk.ssc.pofo.pojo.Comment" id="cmntResultMap">
+		<result property="id" column="comment_id"></result>
+		<result property="postId" column="post_id"></result>
+		<result property="userId" column="user_id"></result>
+		<result property="content" column="comment_content"></result>
+		<!-- 
+		<result property="userReply" column="user_id_reply"></result>
+		 -->
+		<result property="commentReply" column="comment_reply"></result>
+		<result property="seq" column="comment_seq"></result>
+		<result property="notifyUsers" column="notify_users"></result>
+		<result property="thread" column="comment_thread"></result>
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+	
+	<resultMap type="me.codetalk.ssc.pofo.pojo.CommentVO" id="cmntVOResultMap" extends="cmntResultMap">
+		<result property="userName" column="user_name"></result>
+		<result property="userLogin" column="user_login"></result>
+		<result property="userProfile" column="user_profile"></result>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+	    comment_id, post_id, user_id, comment_content,
+	    comment_reply, comment_seq, notify_users, comment_thread, create_date
+  	</sql>
+	
+	<insert id="insertComment" parameterType="me.codetalk.ssc.pofo.pojo.Comment" useGeneratedKeys="true" keyProperty="id" keyColumn="comment_id">
+		insert into pf_comments (post_id, user_id, comment_content, comment_reply, comment_seq, notify_users, comment_thread)
+		values (
+			#{postId}, #{userId}, #{content}, #{commentReply}, #{seq}, #{notifyUsers}, #{thread}
+		)
+	</insert>
+	
+	<select id="selectComment" parameterType="Long" resultMap="cmntResultMap">
+		select <include refid="Base_Column_List" />
+		  from pf_comments 
+		 where comment_id = #{cmntId}
+	</select>
+	
+	<select id="listCommentByPost" parameterType="map" resultMap="cmntVOResultMap">
+		select comment_id, post_id, pp.user_id, comment_content, comment_reply, pp.comment_seq, notify_users, comment_thread, pp.create_date,
+			 fu.user_name, fu.user_login, fu.user_profile
+		  from pf_comments pp, fnd_users fu
+		 where pp.post_id = #{postId} and comment_reply is NULL 
+		   and pp.user_id = fu.user_id
+		 order by pp.create_date desc 
+		 limit #{begin}, #{count}
+	</select>
+	
+	<select id="listCommentByThread" parameterType="map" resultMap="cmntVOResultMap">
+		select comment_id, post_id, pp.user_id, comment_content, comment_reply, pp.comment_seq, notify_users, comment_thread, pp.create_date,
+			 fu.user_name, fu.user_login, fu.user_profile
+		  from pf_comments pp, fnd_users fu
+		 where pp.comment_thread = #{thread} and comment_reply is NOT NULL 
+		   and pp.user_id = fu.user_id
+		 order by pp.create_date desc 
+		 limit #{begin}, #{count}
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
