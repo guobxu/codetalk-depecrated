@@ -9,6 +9,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import me.codetalk.webmine.Constants;
 import me.codetalk.webmine.data.WebEntity;
 import me.codetalk.webmine.page.PageAttr;
 import me.codetalk.webmine.util.Utils;
@@ -36,10 +37,23 @@ public class HtmlPage extends AbstractPage {
 			if(els.isEmpty()) {
 				attrs.put(k, null);
 			} else {
-				Element el = els.first();
-				
 				String attrName = v.getName();
-				attrs.put(k, attrName == null ? el.html() : el.attr(attrName));
+				Integer type = v.getType();
+				
+				String val = null;
+				if(attrName != null) {
+					val = els.attr(attrName);
+				} else if(type == Constants.ATTR_TYPE_HTML) {
+					val = els.html();
+				} else if(type == Constants.ATTR_TYPE_TEXT) {
+					val = els.text();
+				} else if(type == Constants.ATTR_TYPE_HTML_FIRST) {
+					val = els.first().html();
+				} else if(type == Constants.ATTR_TYPE_TEXT_FIRST) {
+					val = els.first().text();
+				}
+				
+				attrs.put(k, val);
 			}
 		});
 		
@@ -50,3 +64,12 @@ public class HtmlPage extends AbstractPage {
 	
 
 }
+
+
+
+
+
+
+
+
+

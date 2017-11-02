@@ -33,11 +33,23 @@
 		</dependency>
 	
 		<dependency>
+      		<groupId>org.springframework.kafka</groupId>
+      		<artifactId>spring-kafka</artifactId>
+      		<version>1.3.0.RELEASE</version>
+    	</dependency>
+	
+		<dependency>
 			<groupId>me.codetalk</groupId>
 			<artifactId>codetalk-utils</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
-
+		
+		<dependency>
+			<groupId>me.codetalk</groupId>
+			<artifactId>codetalk-webmine</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		
 	</dependencies>
 
 </project>

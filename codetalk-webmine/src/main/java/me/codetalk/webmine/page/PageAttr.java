@@ -9,11 +9,18 @@ package me.codetalk.webmine.page;
 public class PageAttr {
 
 	private String el;		// element 
-	private String name;	// attr name	如果为null 取text
+	private String name;	// attr name	如果为null 取text 或者 html
+	private Integer type; 	// type 1 html 2 text
 	
 	public PageAttr(String el, String name) {
 		this.el = el;
 		this.name = name;
+	}
+	
+	public PageAttr(String el, String name, Integer type) {
+		this(el, name);
+		
+		this.type = type;
 	}
 	
 	public String getEl() {
@@ -30,6 +37,14 @@ public class PageAttr {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
 	
 	
