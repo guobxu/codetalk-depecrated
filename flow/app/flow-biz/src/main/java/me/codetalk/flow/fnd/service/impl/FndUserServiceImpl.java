@@ -75,7 +75,7 @@ public class FndUserServiceImpl implements IFndUserService {
 	// Kakfa listeners
 	
 	// 添加用户, 创建FND用户记录
-	@KafkaListener(topics = "ssc-user-signup", groupId = "ssc-user-signup-fnd-creation-group")
+	@KafkaListener(topics = "flow-user-signup", groupId = "flow-user-signup-fnd-creation")
     public void msgUserAdd_create(String msgstr) {
 		LOGGER.info("In msgUserAdd_create...Receive mesg data = " + msgstr);
 		

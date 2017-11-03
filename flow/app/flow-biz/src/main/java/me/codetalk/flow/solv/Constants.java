@@ -2,8 +2,8 @@ package me.codetalk.flow.solv;
 
 public class Constants {
 
-	public static final int CONST_N = 0; 		// 0 表示否 
-	public static final int CONST_Y = 1;		// 1 表示是
+	public static final int CONST_NO = 0; 		// 0 表示否 
+	public static final int CONST_YES = 1;		// 1 表示是
 	
 	// Cache
 	public static final int CACHE_STAT_QUEST_RANGE = 10000; // QUEST id范围

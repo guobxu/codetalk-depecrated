@@ -81,7 +81,7 @@ public class TagServiceImpl implements ITagService {
 	
 	// Kafka listeners
 	
-	@KafkaListener(topics = "ssc-quest-create", groupId = "ssc-quest-create-fnd-tag-incr-group")
+	@KafkaListener(topics = "flow-quest-create", groupId = "flow-quest-create-fnd-tag-incr")
     public void msgIncrHit(Message message) {
 		LOGGER.info("In incrHit...Receive mesg data = " + message.getData());
 		

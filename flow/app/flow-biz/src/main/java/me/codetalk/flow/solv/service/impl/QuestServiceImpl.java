@@ -6,12 +6,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import me.codetalk.mesg.KeyedMessages;
-import me.codetalk.messaging.kafka.aspect.annotation.KafkaAfter;
 import me.codetalk.flow.fnd.stat.redis.HashStatSupport;
 import me.codetalk.flow.solv.Constants;
 import me.codetalk.flow.solv.exception.SolvServiceException;
@@ -23,10 +23,14 @@ import me.codetalk.flow.solv.pojo.QuestVO;
 import me.codetalk.flow.solv.pojo.ReplyVO;
 import me.codetalk.flow.solv.service.IQuestService;
 import me.codetalk.flow.solv.service.IReplyService;
+import me.codetalk.mesg.KeyedMessages;
+import me.codetalk.messaging.kafka.aspect.annotation.KafkaAfter;
 
 @Service
 public class QuestServiceImpl extends HashStatSupport implements IQuestService {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(QuestServiceImpl.class);
+	
 	@Autowired 
 	private QuestMapper questMapper;
 	
@@ -194,11 +198,6 @@ public class QuestServiceImpl extends HashStatSupport implements IQuestService {
 		return getStat(questId, CACHE_STAT_QUEST_CMNT).intValue();
 	}
 
-
-
-	
-	
-	
 	
 }
 
