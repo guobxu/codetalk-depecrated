@@ -17,7 +17,6 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
         "me.codetalk.cache.config",
 		"me.codetalk.cache.service.impl",
         "me.codetalk.flow.auth.service.impl",
-        "me.codetalk.messaging.kafka.aspect"
 })
 @MapperScan(value = {"me.codetalk.flow.*.mapper"})
 @ImportResource(locations = {

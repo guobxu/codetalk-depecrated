@@ -1,9 +1,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="me.codetalk.ssc.pofo.mapper.PostLikeMapper">
+<mapper namespace="me.codetalk.flow.pofo.mapper.PostLikeMapper">
 
-	<resultMap type="me.codetalk.ssc.pofo.pojo.PostLike" id="postLikeResultMap">
+	<resultMap type="me.codetalk.flow.pofo.pojo.PostLike" id="postLikeResultMap">
 		<result property="id" column="like_id"></result>
 		<result property="postId" column="post_id"></result>
 		<result property="userId" column="user_id"></result>
@@ -16,7 +16,7 @@
 	    like_id, post_id, user_id, delete_mark, update_date, create_date 
   	</sql>
 	
-	<insert id="insertPostLike" parameterType="me.codetalk.ssc.pofo.pojo.PostLike" useGeneratedKeys="true" keyProperty="id" keyColumn="like_id">
+	<insert id="insertPostLike" parameterType="me.codetalk.flow.pofo.pojo.PostLike" useGeneratedKeys="true" keyProperty="id" keyColumn="like_id">
 		insert into pf_post_likes (post_id, user_id)
 		values (
 			#{postId}, #{userId}

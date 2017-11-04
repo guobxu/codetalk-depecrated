@@ -44,17 +44,17 @@ public class SolvServiceImpl extends AbstractBizService implements ISolvService 
 	private ITagService tagService; // TODO
 	
 	// URI POST
-	private static final String URI_QUEST_PUBLISH = "/ssc/solv/quest/publish";
-	private static final String URI_REPLY_ADD = "/ssc/solv/reply";
-	private static final String URI_COMMENT_ADD = "/ssc/solv/comment";
-	private static final String URI_QUEST_ACCEPT = "/ssc/solv/accept";
+	private static final String URI_QUEST_PUBLISH = "/flow/solv/quest/publish";
+	private static final String URI_REPLY_ADD = "/flow/solv/reply";
+	private static final String URI_COMMENT_ADD = "/flow/solv/comment";
+	private static final String URI_QUEST_ACCEPT = "/flow/solv/accept";
 	
-	private static final String URI_REPLY_VOTE = "/ssc/solv/reply/vote";
+	private static final String URI_REPLY_VOTE = "/flow/solv/reply/vote";
 	
 	// URI GET
-	private static final String URI_QUEST_LIST = "/ssc/solv/quest/list";
-	private static final String URI_QUEST_DTL = "/ssc/solv/quest";
-	private static final String URI_COMMENT_LIST = "/ssc/solv/comment/list";
+	private static final String URI_QUEST_LIST = "/flow/solv/quest/list";
+	private static final String URI_QUEST_DTL = "/flow/solv/quest";
+	private static final String URI_COMMENT_LIST = "/flow/solv/comment/list";
 	
 	// ret template
 	// 发布问题成功

@@ -1,9 +1,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="me.codetalk.ssc.solv.mapper.ReplyVoteMapper">
+<mapper namespace="me.codetalk.flow.solv.mapper.ReplyVoteMapper">
 
-	<resultMap type="me.codetalk.ssc.solv.pojo.ReplyVote" id="replyVoteResultMap">
+	<resultMap type="me.codetalk.flow.solv.pojo.ReplyVote" id="replyVoteResultMap">
 		<result property="id" column="vote_id"></result>
 		<result property="replyId" column="reply_id"></result>
 		<result property="up" column="vote_up"></result>
@@ -16,7 +16,7 @@
 	    vote_id, user_id, reply_id, vote_up, vote_down, delete_mark, create_date
   	</sql>
 	
-	<insert id="insertVote" parameterType="me.codetalk.ssc.solv.pojo.ReplyVote" useGeneratedKeys="true" keyProperty="id" keyColumn="vote_id">
+	<insert id="insertVote" parameterType="me.codetalk.flow.solv.pojo.ReplyVote" useGeneratedKeys="true" keyProperty="id" keyColumn="vote_id">
 		insert into sv_reply_votes(user_id, reply_id, vote_up, vote_down)
 		values (
 			#{userId}, #{replyId}, #{up}, #{down}

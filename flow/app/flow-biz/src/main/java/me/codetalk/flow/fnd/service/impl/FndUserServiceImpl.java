@@ -47,7 +47,7 @@ public class FndUserServiceImpl implements IFndUserService {
 	}
 
 	@Transactional
-	@KafkaAfter(value = "ssc-user-update", app = "ssc", module = "fnd")
+	@KafkaAfter(value = "flow-user-update", app = "flow", module = "fnd")
 	public FndUser updateUser(FndUser user) throws FndServiceException {
 		FndUser userInDb = userMapper.selectUserById(user.getUserId());
 		if(userInDb == null) {

@@ -1,10 +1,11 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="me.codetalk.ssc.solv.mapper.QuestMapper">
+<mapper namespace="me.codetalk.flow.solv.mapper.QuestMapper">
 
-	<resultMap type="me.codetalk.ssc.solv.pojo.Quest" id="questResultMap">
+	<resultMap type="me.codetalk.flow.solv.pojo.Quest" id="questResultMap">
 		<result property="id" column="quest_id"></result>
+		<result property="uuid" column="quest_uuid"></result>
 		<result property="userId" column="user_id"></result>
 		<result property="title" column="quest_title"></result>
 		<result property="content" column="quest_content"></result>
@@ -14,12 +15,13 @@
 		<result property="dupMark" column="dup_mark"></result>
 		<result property="dupQid" column="dup_qid"></result>
 		<result property="spamMark" column="spam_mark"></result>
+		<result property="indexed" column="quest_indexed"></result>
 		<result property="createDate" column="create_date"></result>
 		<result property="updateDate" column="update_date"></result>
 		<result property="updateBy" column="update_by"></result>
 	</resultMap>
 	
-	<resultMap type="me.codetalk.ssc.solv.pojo.QuestVO" extends="questResultMap" id="questVOResultMap">
+	<resultMap type="me.codetalk.flow.solv.pojo.QuestVO" extends="questResultMap" id="questVOResultMap">
 		<result property="userName" column="user_name"></result>
 		<result property="userLogin" column="user_login"></result>
 		<result property="userProfile" column="user_profile"></result>
@@ -27,12 +29,12 @@
 		<result property="accepted" column="quest_accepted"></result>
 		<result property="frozen" column="quest_frozen"></result>
 		
-		<collection property="tags" ofType="me.codetalk.ssc.solv.pojo.QuestTagVO">  
+		<collection property="tags" ofType="me.codetalk.flow.solv.pojo.QuestTagVO">  
             <result property="tagId" column="tag_id"></result>
             <result property="tagText" column="tag_text"></result>
         </collection>
         
-        <collection property="replies" ofType="me.codetalk.ssc.solv.pojo.ReplyVO">  
+        <collection property="replies" ofType="me.codetalk.flow.solv.pojo.ReplyVO">  
             <result property="id" column="reply_id"></result>
             <result property="userLogin" column="user_login_reply"></result>
             <result property="userName" column="user_name_reply"></result>
@@ -44,27 +46,27 @@
 	</resultMap>
 	
 	<sql id="Base_Column_List">
-	    quest_id,user_id,quest_title,quest_content,quest_plus,quest_status,
-	    notify_users,dup_mark,dup_qid,spam_mark,create_date, update_date, update_by
+	    quest_id,quest_uuid,user_id,quest_title,quest_content,quest_plus,quest_status,
+	    notify_users,dup_mark,dup_qid,spam_mark, quest_indexed, create_date, update_date, update_by
   	</sql>
 	
-	<insert id="insertQuestion" parameterType="me.codetalk.ssc.solv.pojo.Quest" useGeneratedKeys="true" keyProperty="id" keyColumn="quest_id">
-		insert into sv_questions(user_id, quest_title, quest_content, quest_status, notify_users, update_by)
+	<insert id="insertQuestion" parameterType="me.codetalk.flow.solv.pojo.Quest" useGeneratedKeys="true" keyProperty="id" keyColumn="quest_id">
+		insert into sv_quests(quest_uuid, user_id, quest_title, quest_content, quest_status, notify_users, update_by)
 		values (
-			#{userId}, #{title}, #{content}, #{status}, #{notifyUsers}, #{updateBy}
+			#{uuid}, #{userId}, #{title}, #{content}, #{status}, #{notifyUsers}, #{updateBy}
 		)
 	</insert>
 	
 	<select id="selectOne" parameterType="Long" resultType="Integer">
-		select 1 from sv_questions where quest_id = #{qid}
+		select 1 from sv_quests where quest_id = #{qid}
 	</select>
 	
 	<select id="listQuest" parameterType="map" resultMap="questVOResultMap">
-	  select q.quest_id, fu.user_login, fu.user_name, fu.user_profile, 
+	  select q.quest_id, q.quest_uuid, fu.user_login, fu.user_name, fu.user_profile, 
 			 q.quest_title, q.quest_plus, q.quest_status, qt.tag_id, t.tag_text, q.update_date, 
 	     	 if(q.quest_status = 4, 1, 0) quest_accepted, 
 			 if(q.quest_status = 3, 1, 0) quest_frozen
-		from sv_questions q, sv_quest_tags qt, fnd_users fu, fnd_tags t
+		from sv_quests q, sv_quest_tags qt, fnd_users fu, fnd_tags t
 	   where q.spam_mark = 0 and q.quest_status not in (1, 3)
 		 and q.quest_id = qt.quest_id 
 		 and q.user_id = fu.user_id
@@ -74,20 +76,20 @@
 	</select>
 	
 	<select id="listQuestByTag" parameterType="map" resultMap="questVOResultMap">
-			select q.quest_id, fu.user_login, fu.user_name, fu.user_profile, 
+			select q.quest_id, q.quest_uuid, fu.user_login, fu.user_name, fu.user_profile, 
 			 q.quest_title, q.quest_plus, q.quest_status, qt.tag_id, t.tag_text, q.update_date, 
 	     	 if(q.quest_status = 4, 1, 0) quest_accepted, 
 			 if(q.quest_status = 3, 1, 0) quest_frozen
 		  from (
 				select qt.quest_id
-					from sv_quest_tags qt, sv_questions q
+					from sv_quest_tags qt, sv_quests q
 				 where qt.tag_id in (
 				 	<foreach collection="tagList" separator="," index="index" item="tagId">#{tagId}</foreach>
 				 ) and qt.quest_id = q.quest_id and q.spam_mark = 0 and q.quest_status not in (1, 3)
 				 group by qt.quest_id, update_date
 				 order by update_date DESC
 				 limit #{begin}, #{count}
-			) t, sv_questions q, sv_quest_tags qt, fnd_users fu, fnd_tags t
+			) t, sv_quests q, sv_quest_tags qt, fnd_users fu, fnd_tags t
 		 where t.quest_id = q.quest_id
 		 and q.quest_id = qt.quest_id 
 		 and q.user_id = fu.user_id
@@ -96,13 +98,13 @@
 	</select>
 	
 	<select id="selectQuestVOById" parameterType="Long" resultMap="questVOResultMap">
-		select q.quest_id, fu.user_login, fu.user_name, fu.user_profile, q.quest_title, 
+		select q.quest_id, q.quest_uuid, fu.user_login, fu.user_name, fu.user_profile, q.quest_title, 
 			 q.quest_content, q.quest_plus, q.quest_status, qt.tag_id, t.tag_text, q.update_date, 
 	     	 if(q.quest_status = 4, 1, 0) quest_accepted, 
 			 if(q.quest_status = 3, 1, 0) quest_frozen,
 			 r.reply_id, fu2.user_login user_login_reply, fu2.user_name user_name_reply, fu2.user_profile user_profile_reply,
 			 r.reply_content, r.reply_accepted, r.create_date reply_date
-		from sv_questions q
+		from sv_quests q
 		left join sv_quest_tags qt on q.quest_id = qt.quest_id 
 	    left join fnd_users fu on q.user_id = fu.user_id 
 	    left join fnd_tags t on qt.tag_id = t.tag_id
@@ -112,7 +114,7 @@
 	</select>
 	
 	<update id="updateStatus" parameterType="map">
-		update sv_questions set quest_status = #{status} where quest_id = #{id} 
+		update sv_quests set quest_status = #{status} where quest_id = #{id} 
 	</update>
 	
 </mapper>

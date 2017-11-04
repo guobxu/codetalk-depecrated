@@ -1,9 +1,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="me.codetalk.ssc.pofo.mapper.PostMapper">
+<mapper namespace="me.codetalk.flow.pofo.mapper.PostMapper">
 
-	<resultMap type="me.codetalk.ssc.pofo.pojo.Post" id="postResultMap">
+	<resultMap type="me.codetalk.flow.pofo.pojo.Post" id="postResultMap">
 		<result property="id" column="post_id"></result>
 		<result property="userId" column="user_id"></result>
 		<result property="type" column="post_type"></result>
@@ -16,7 +16,7 @@
 		<result property="postComments" column="post_comments"></result>
 		<result property="postViews" column="post_views"></result>
 		<result property="createDate" column="create_date"></result>
-		<collection property="imgList" ofType="me.codetalk.ssc.pofo.pojo.PostImg">
+		<collection property="imgList" ofType="me.codetalk.flow.pofo.pojo.PostImg">
 			<result property="id" column="img_id"></result>
 			<result property="url" column="img_url"></result>
 			<result property="seq" column="img_seq"></result>
@@ -24,19 +24,7 @@
 		</collection>
 	</resultMap>
 	
-	<!--  
-	<resultMap type="com.ssc.pofo.pojo.Post" id="postReferResultMap">
-		<result property="id" column="post_id_refer"></result>
-		<result property="content" column="post_content_refer"></result>
-	</resultMap>
-	
-	<resultMap type="com.ssc.pofo.pojo.Comment" id="commentReferResultMap">
-		<result property="id" column="comment_id_refer"></result>
-		<result property="content" column="comment_content_refer"></result>
-	</resultMap>
-	-->
-
-	<resultMap id="postVOResultMap" type="me.codetalk.ssc.pofo.pojo.PostVO" extends="postResultMap">
+	<resultMap id="postVOResultMap" type="me.codetalk.flow.pofo.pojo.PostVO" extends="postResultMap">
 		<result property="userName" column="user_name"></result>
 		<result property="userLogin" column="user_login"></result>
 		<result property="userProfile" column="user_profile"></result>
@@ -61,7 +49,7 @@
 	    notify_users, post_refers, post_likes, post_comments, post_views, create_date
   	</sql>
 	
-	<insert id="insertPost" parameterType="me.codetalk.ssc.pofo.pojo.Post" useGeneratedKeys="true" keyProperty="id" keyColumn="post_id">
+	<insert id="insertPost" parameterType="me.codetalk.flow.pofo.pojo.Post" useGeneratedKeys="true" keyProperty="id" keyColumn="post_id">
 		insert into pf_posts (user_id, post_type, post_content, post_id_refer, comment_id_refer, notify_users)
 		values (
 			#{userId}, #{type}, #{content}, #{referPost}, #{referComment}, #{notifyUsers}

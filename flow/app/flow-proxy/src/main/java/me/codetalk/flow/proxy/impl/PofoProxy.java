@@ -26,7 +26,7 @@ public class PofoProxy extends BaseProxy {
 	@Autowired
 	private IPofoService pofoService;
 	
-	@RequestMapping(value = "/ssc/pofo/**", method = RequestMethod.POST)
+	@RequestMapping(value = "/flow/pofo/**", method = RequestMethod.POST)
 	public Callable<String> doPost(@RequestBody Map<String, Object> data, HttpServletRequest request) {
 		return new Callable<String>() {
 
@@ -49,7 +49,7 @@ public class PofoProxy extends BaseProxy {
     	};
 	}
 	
-	@RequestMapping(value = "/ssc/pofo/**", method = RequestMethod.GET)
+	@RequestMapping(value = "/flow/pofo/**", method = RequestMethod.GET)
     public Callable<String> doGet(HttpServletRequest request) {
     	return new Callable<String>() {
 

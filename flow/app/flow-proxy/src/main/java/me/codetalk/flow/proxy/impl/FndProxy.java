@@ -42,7 +42,7 @@ public class FndProxy extends BaseProxy {
 	
 	private String fileServer;
 	
-	@RequestMapping(value = "/ssc/fnd/user/**", method = RequestMethod.POST)
+	@RequestMapping(value = "/flow/fnd/user/**", method = RequestMethod.POST)
 	public Callable<String> doPost(@RequestBody Map<String, Object> data, HttpServletRequest request) {
 		return new Callable<String>() {
 
@@ -65,7 +65,7 @@ public class FndProxy extends BaseProxy {
     	};
 	}
 	
-	@RequestMapping(value = "/ssc/fnd/**", method = RequestMethod.GET)
+	@RequestMapping(value = "/flow/fnd/**", method = RequestMethod.GET)
     public Callable<String> doGet(HttpServletRequest request) {
     	return new Callable<String>() {
 
@@ -89,7 +89,7 @@ public class FndProxy extends BaseProxy {
     	};
     }
 	
-	@RequestMapping(value = "/ssc/fnd/file/upload", method = RequestMethod.POST)
+	@RequestMapping(value = "/flow/fnd/file/upload", method = RequestMethod.POST)
 	public Callable<String> uploadFile(@RequestParam("file") MultipartFile file, 
 										@RequestParam(value="user_login", defaultValue="") String userLogin, 
 										@RequestParam(value="access_token",defaultValue="") String accessToken,

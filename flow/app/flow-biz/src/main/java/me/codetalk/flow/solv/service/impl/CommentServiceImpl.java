@@ -44,7 +44,7 @@ public class CommentServiceImpl implements ICommentService {
 	
 	@Override
 	@Transactional
-	@KafkaAfter(value = "ssc-quest-comment-create", app = "ssc", module = "solv")
+	@KafkaAfter(value = "flow-quest-comment-create", app = "flow", module = "solv")
 	public Comment addQuestComment(Comment cmnt) {
 		assert cmnt.getQuestId() != null 
 				&& cmnt.getReplyId() == null 
@@ -60,7 +60,7 @@ public class CommentServiceImpl implements ICommentService {
 
 	@Override
 	@Transactional
-	@KafkaAfter(value = "ssc-quest-comment-create", app = "ssc", module = "solv")
+	@KafkaAfter(value = "flow-quest-comment-create", app = "flow", module = "solv")
 	public Comment addReplyComment(Comment cmnt) throws SolvServiceException {
 		Long replyId = cmnt.getReplyId();
 		
@@ -83,7 +83,7 @@ public class CommentServiceImpl implements ICommentService {
 
 	@Override
 	@Transactional
-	@KafkaAfter(value = "ssc-quest-comment-create", app = "ssc", module = "solv")
+	@KafkaAfter(value = "flow-quest-comment-create", app = "flow", module = "solv")
 	public Comment addCoComment(Comment cmnt, boolean isQuest) throws SolvServiceException {
 		Long cmntReplyId = cmnt.getCommentReply();
 		

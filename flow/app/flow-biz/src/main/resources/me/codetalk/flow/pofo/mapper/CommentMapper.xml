@@ -1,9 +1,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="me.codetalk.ssc.pofo.mapper.CommentMapper">
+<mapper namespace="me.codetalk.flow.pofo.mapper.CommentMapper">
 
-	<resultMap type="me.codetalk.ssc.pofo.pojo.Comment" id="cmntResultMap">
+	<resultMap type="me.codetalk.flow.pofo.pojo.Comment" id="cmntResultMap">
 		<result property="id" column="comment_id"></result>
 		<result property="postId" column="post_id"></result>
 		<result property="userId" column="user_id"></result>
@@ -18,7 +18,7 @@
 		<result property="createDate" column="create_date"></result>
 	</resultMap>
 	
-	<resultMap type="me.codetalk.ssc.pofo.pojo.CommentVO" id="cmntVOResultMap" extends="cmntResultMap">
+	<resultMap type="me.codetalk.flow.pofo.pojo.CommentVO" id="cmntVOResultMap" extends="cmntResultMap">
 		<result property="userName" column="user_name"></result>
 		<result property="userLogin" column="user_login"></result>
 		<result property="userProfile" column="user_profile"></result>
@@ -29,7 +29,7 @@
 	    comment_reply, comment_seq, notify_users, comment_thread, create_date
   	</sql>
 	
-	<insert id="insertComment" parameterType="me.codetalk.ssc.pofo.pojo.Comment" useGeneratedKeys="true" keyProperty="id" keyColumn="comment_id">
+	<insert id="insertComment" parameterType="me.codetalk.flow.pofo.pojo.Comment" useGeneratedKeys="true" keyProperty="id" keyColumn="comment_id">
 		insert into pf_comments (post_id, user_id, comment_content, comment_reply, comment_seq, notify_users, comment_thread)
 		values (
 			#{postId}, #{userId}, #{content}, #{commentReply}, #{seq}, #{notifyUsers}, #{thread}

@@ -26,7 +26,7 @@ public class SolvProxy extends BaseProxy {
 	@Autowired
 	private ISolvService solvService;
 	
-	@RequestMapping(value = "/ssc/solv/**", method = RequestMethod.POST)
+	@RequestMapping(value = "/flow/solv/**", method = RequestMethod.POST)
 	public Callable<String> doPost(@RequestBody Map<String, Object> data, HttpServletRequest request) {
 		return new Callable<String>() {
 
@@ -49,7 +49,7 @@ public class SolvProxy extends BaseProxy {
     	};
 	}
 	
-	@RequestMapping(value = "/ssc/solv/**", method = RequestMethod.GET)
+	@RequestMapping(value = "/flow/solv/**", method = RequestMethod.GET)
     public Callable<String> doGet(HttpServletRequest request) {
     	return new Callable<String>() {
 

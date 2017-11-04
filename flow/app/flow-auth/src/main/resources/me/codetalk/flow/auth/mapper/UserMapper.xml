@@ -1,9 +1,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="me.codetalk.ssc.auth.mapper.UserMapper">
+<mapper namespace="me.codetalk.flow.auth.mapper.UserMapper">
 
-	<resultMap type="me.codetalk.ssc.auth.pojo.User" id="userResultMap">
+	<resultMap type="me.codetalk.flow.auth.pojo.User" id="userResultMap">
 		<result property="id" column="user_id"></result>
 		<result property="login" column="user_login"></result>
 		<result property="loginLower" column="user_login_lower"></result>
@@ -22,7 +22,7 @@
 	 	user_mail, user_mail_lower, mail_verified, user_status, user_passwd, create_date
   	</sql>
 	
-	<insert id="insertUser" parameterType="me.codetalk.ssc.auth.pojo.User" useGeneratedKeys="true" keyProperty="id" keyColumn="user_id">
+	<insert id="insertUser" parameterType="me.codetalk.flow.auth.pojo.User" useGeneratedKeys="true" keyProperty="id" keyColumn="user_id">
 		insert into auth_users (user_login, user_login_lower, user_mobile, mobile_verified, 
 								user_mail, user_mail_lower, mail_verified, user_passwd)
 		values (

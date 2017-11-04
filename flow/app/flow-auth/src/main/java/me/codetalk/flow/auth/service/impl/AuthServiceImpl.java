@@ -61,10 +61,10 @@ public class AuthServiceImpl implements IAuthService {
 	private static final long CACHE_RESETPWD_EXPIRE = 5 * 60; // 5分钟
 	
 	// URI
-	static final String URI_AUTH_SIGNUP = "/ssc/auth/signup";
-	static final String URI_AUTH_LOGIN = "/ssc/auth/login";
-	static final String URI_AUTH_FORGETPWD = "/ssc/auth/forgetpwd";
-	static final String URI_AUTH_RESETPWD = "/ssc/auth/resetpwd";
+	static final String URI_AUTH_SIGNUP = "/flow/auth/signup";
+	static final String URI_AUTH_LOGIN = "/flow/auth/login";
+	static final String URI_AUTH_FORGETPWD = "/flow/auth/forgetpwd";
+	static final String URI_AUTH_RESETPWD = "/flow/auth/resetpwd";
 	
 	@Transactional
 	public String doPost(String uri, Map<String, Object> data) {

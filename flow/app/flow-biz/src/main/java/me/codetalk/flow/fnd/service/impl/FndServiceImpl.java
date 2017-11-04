@@ -50,17 +50,17 @@ public class FndServiceImpl extends AbstractBizService implements IFndService {
 	private INoticeService noticeService;
 	
 	// URI POST
-	private static final String URI_USER_UPDATE = "/ssc/fnd/user/update";
-	private static final String URI_USER_SETTAG = "/ssc/fnd/user/settag";
-	private static final String URI_NOTICE_READALL = "/ssc/fnd/notice/readall"; 
+	private static final String URI_USER_UPDATE = "/flow/fnd/user/update";
+	private static final String URI_USER_SETTAG = "/flow/fnd/user/settag";
+	private static final String URI_NOTICE_READALL = "/flow/fnd/notice/readall"; 
 	
 	// URI GET
-	private static final String URI_USER_INFO = "/ssc/fnd/user";
-	private static final String URI_TAGS_BYPOS = "/ssc/fnd/tags";
-	private static final String URI_POS_TYPES = "/ssc/fnd/postypes";
+	private static final String URI_USER_INFO = "/flow/fnd/user";
+	private static final String URI_TAGS_BYPOS = "/flow/fnd/tags";
+	private static final String URI_POS_TYPES = "/flow/fnd/postypes";
 	
-	private static final String URI_NOTICE_NEWCOUNT = "/ssc/fnd/notice/newcount";
-	private static final String URI_NOTICE_LIST = "/ssc/fnd/notice/list";
+	private static final String URI_NOTICE_NEWCOUNT = "/flow/fnd/notice/newcount";
+	private static final String URI_NOTICE_LIST = "/flow/fnd/notice/list";
 	
 	@PostConstruct
 	public void setUriSecured() {

@@ -6,6 +6,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	    http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 
-    <dubbo:service interface="me.codetalk.ssc.auth.service.IAuthService" ref="authService"/>
+    <dubbo:service interface="me.codetalk.flow.auth.service.IAuthService" ref="authService"/>
 
 </beans>

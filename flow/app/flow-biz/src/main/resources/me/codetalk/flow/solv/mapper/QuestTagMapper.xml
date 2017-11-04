@@ -1,7 +1,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="me.codetalk.ssc.solv.mapper.QuestTagMapper">
+<mapper namespace="me.codetalk.flow.solv.mapper.QuestTagMapper">
 
 	<insert id="insertQuestTags" parameterType="map">
 		insert into sv_quest_tags (quest_id,tag_id)

@@ -30,7 +30,7 @@ public class AuthProxy extends BaseProxy {
 	@Autowired
 	private IAuthService authService;
 	
-	@RequestMapping(value = "/ssc/auth/**", method = RequestMethod.POST)
+	@RequestMapping(value = "/flow/auth/**", method = RequestMethod.POST)
 	public Callable<String> doPost(@RequestBody Map<String, Object> data, HttpServletRequest request) {
 		return new Callable<String>() {
 

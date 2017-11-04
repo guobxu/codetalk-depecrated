@@ -41,7 +41,7 @@ public class PostServiceImpl extends HashStatSupport implements IPostService {
 	private static final String CACHE_STAT_POST_COMMENT = "STAT-POST-COMMENT-";	// 评论
 	
 	@Transactional
-	@KafkaAfter(value = "ssc-post-create", app = "ssc", module = "pofo")
+	@KafkaAfter(value = "flow-post-create", app = "flow", module = "pofo")
 	public Post addPost(Post post) {
 		postMapper.insertPost(post);
 		

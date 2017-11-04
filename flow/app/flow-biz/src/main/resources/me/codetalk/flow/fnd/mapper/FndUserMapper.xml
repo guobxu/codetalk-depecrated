@@ -1,9 +1,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="me.codetalk.ssc.fnd.mapper.FndUserMapper">
+<mapper namespace="me.codetalk.flow.fnd.mapper.FndUserMapper">
 
-	<resultMap type="me.codetalk.ssc.fnd.pojo.FndUser" id="userResultMap">
+	<resultMap type="me.codetalk.flow.fnd.pojo.FndUser" id="userResultMap">
 		<result property="userId" column="user_id"></result>
 		<result property="userName" column="user_name"></result>
 		<result property="userProfile" column="user_profile"></result>
@@ -19,7 +19,7 @@
 	    user_id, user_login, user_name, user_profile, profile_status, position_type, attribute1, attribute2, attribute3, create_date
   	</sql>
 	
-	<insert id="insertUser" parameterType="me.codetalk.ssc.fnd.pojo.FndUser">
+	<insert id="insertUser" parameterType="me.codetalk.flow.fnd.pojo.FndUser">
 		insert into fnd_users (user_id, user_login, user_name, user_profile, profile_status, position_type)
 		values (
 				#{userId}, #{userLogin}, #{userName}, #{userProfile}, #{profileStatus}, #{positionType}
@@ -32,7 +32,7 @@
 		 where user_id = #{userId}
 	</select>
 	
-	<update id="updateUser" parameterType="me.codetalk.ssc.fnd.pojo.FndUser"> 
+	<update id="updateUser" parameterType="me.codetalk.flow.fnd.pojo.FndUser"> 
 		update fnd_users 
 		   set user_name = #{userName}, user_profile = #{userProfile}, profile_status = #{profileStatus}, position_type = #{positionType}
 		 where user_id = #{userId}

@@ -36,7 +36,7 @@ public class UserServiceImpl implements IUserService {
 	private KeyedMessages km;
 	
 	@Transactional
-	@KafkaAfter(value = "ssc-user-signup", app = "ssc", module = "auth")
+	@KafkaAfter(value = "flow-user-signup", app = "flow", module = "auth")
 	public User addUser(User user) throws AuthServiceException {
 		String login = user.getLogin(), mail = user.getMail(), mobile = user.getMobile(); 
 		

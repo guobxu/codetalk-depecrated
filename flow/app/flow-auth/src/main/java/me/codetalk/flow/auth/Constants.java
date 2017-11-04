@@ -58,8 +58,8 @@ public class Constants {
 // 	public static final String QUEUE_USER_ADD_SENDMAIL = "ssc-auth-queue-user-add-sendmail";
     
     // App & Module
-    public static final String SSC_APP = "ssc";
-    public static final String SSC_MOD_AUTH = "ssc-auth";
+    public static final String FLOW_APP = "flow";
+    public static final String FLOW_MOD_AUTH = "flow-auth";
     
     // Response 
     public static final int CODE_SUCCESS = 1;

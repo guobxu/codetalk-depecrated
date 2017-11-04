@@ -12,6 +12,11 @@ public class Quest {
 
 	@JsonProperty("quest_id")
 	private Long id;
+	
+	@JsonIgnore
+	private String uuid;
+	
+	@JsonIgnore
 	private Integer userId;
 	
 	@JsonProperty("quest_title")
@@ -37,6 +42,9 @@ public class Quest {
 	
 	@JsonProperty("quest_spam")
 	private Integer spamMark; // 0 non-spam 1 spam
+	
+	@JsonIgnore
+	private Integer indexed;
 	
 	@JsonProperty("create_date")
 	private Timestamp createDate;
@@ -149,6 +157,22 @@ public class Quest {
 
 	public void setUpdateBy(Integer updateBy) {
 		this.updateBy = updateBy;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public Integer getIndexed() {
+		return indexed;
+	}
+
+	public void setIndexed(Integer indexed) {
+		this.indexed = indexed;
 	}
 
 	

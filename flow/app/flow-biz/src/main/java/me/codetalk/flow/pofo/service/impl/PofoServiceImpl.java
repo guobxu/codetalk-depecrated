@@ -57,15 +57,15 @@ public class PofoServiceImpl extends AbstractBizService implements IPofoService 
 	private ICommentService commentService;
 	
 	// URI POST
-	private static final String URI_POST_CREATE = "/ssc/pofo/post/create";
-	private static final String URI_USER_FOLLOW = "/ssc/pofo/follow";
-	private static final String URI_POST_LIKE = "/ssc/pofo/post/like";
-	private static final String URI_POST_CMNT = "/ssc/pofo/comment/create";
+	private static final String URI_POST_CREATE = "/flow/pofo/post/create";
+	private static final String URI_USER_FOLLOW = "/flow/pofo/follow";
+	private static final String URI_POST_LIKE = "/flow/pofo/post/like";
+	private static final String URI_POST_CMNT = "/flow/pofo/comment/create";
 	
 	// URI GET
-	private static final String URI_POST_LIST = "/ssc/pofo/post/list";
-	private static final String URI_POST_DTL = "/ssc/pofo/post";
-	private static final String URI_CMNT_LIST = "/ssc/pofo/comment/list";
+	private static final String URI_POST_LIST = "/flow/pofo/post/list";
+	private static final String URI_POST_DTL = "/flow/pofo/post";
+	private static final String URI_CMNT_LIST = "/flow/pofo/comment/list";
 	
 	
 	@PostConstruct

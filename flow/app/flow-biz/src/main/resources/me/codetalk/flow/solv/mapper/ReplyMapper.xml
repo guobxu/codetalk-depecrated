@@ -1,9 +1,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="me.codetalk.ssc.solv.mapper.ReplyMapper">
+<mapper namespace="me.codetalk.flow.solv.mapper.ReplyMapper">
 
-	<resultMap type="me.codetalk.ssc.solv.pojo.Reply" id="replyResultMap">
+	<resultMap type="me.codetalk.flow.solv.pojo.Reply" id="replyResultMap">
 		<result property="id" column="reply_id"></result>
 		<result property="questId" column="quest_id"></result>
 		<result property="userId" column="user_id"></result>
@@ -19,7 +19,7 @@
 		<result property="createDate" column="create_date"></result>
 	</resultMap>
 	
-	<resultMap type="me.codetalk.ssc.solv.pojo.ReplyVO" extends="replyResultMap" id="replyVOResultMap">
+	<resultMap type="me.codetalk.flow.solv.pojo.ReplyVO" extends="replyResultMap" id="replyVOResultMap">
 		<result property="userLogin" column="user_login"></result>
         <result property="userName" column="user_name"></result>
         <result property="userProfile" column="user_profile"></result>
@@ -32,7 +32,7 @@
 	    r.accept_date, r.comment_thread, r.notify_users, r.spam_mark, r.update_date, r.update_by, r.create_date
   	</sql>
 	
-	<insert id="insertReply" parameterType="me.codetalk.ssc.solv.pojo.Reply" useGeneratedKeys="true" keyProperty="id" keyColumn="reply_id">
+	<insert id="insertReply" parameterType="me.codetalk.flow.solv.pojo.Reply" useGeneratedKeys="true" keyProperty="id" keyColumn="reply_id">
 		insert into sv_replies(quest_id, user_id, reply_content, comment_thread, notify_users, update_by)
 		values (
 			#{questId}, #{userId}, #{content}, #{commentThread}, #{notifyUsers}, #{updateBy}

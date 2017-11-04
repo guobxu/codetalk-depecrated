@@ -25,6 +25,7 @@ import me.codetalk.flow.solv.service.IQuestService;
 import me.codetalk.flow.solv.service.IReplyService;
 import me.codetalk.mesg.KeyedMessages;
 import me.codetalk.messaging.kafka.aspect.annotation.KafkaAfter;
+import me.codetalk.util.StringUtils;
 
 @Service
 public class QuestServiceImpl extends HashStatSupport implements IQuestService {
@@ -51,8 +52,9 @@ public class QuestServiceImpl extends HashStatSupport implements IQuestService {
 	private static final String CACHE_STAT_QUEST_CMNT = "STAT-QUEST-CMNT-";	// 评论
 	
 	@Transactional
-	@KafkaAfter(value = "ssc-quest-create", app = "ssc", module = "solv")
+	@KafkaAfter(value = "flow-quest-create", app = "flow", module = "solv")
 	public Quest publishQuest(Quest q, List<Integer> tags) {
+		q.setUuid(StringUtils.uuid());
 		questMapper.insertQuestion(q);
 		
 		// tags

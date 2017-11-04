@@ -1,9 +1,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="me.codetalk.ssc.pofo.mapper.UserFollowMapper">
+<mapper namespace="me.codetalk.flow.pofo.mapper.UserFollowMapper">
 
-	<resultMap type="me.codetalk.ssc.pofo.pojo.UserFollow" id="followResultMap">
+	<resultMap type="me.codetalk.flow.pofo.pojo.UserFollow" id="followResultMap">
 		<result property="id" column="follow_id"></result>
 		<result property="userId" column="user_id"></result>
 		<result property="userFollowed" column="user_followed"></result>
@@ -16,7 +16,7 @@
 	    follow_id, user_id, user_followed, delete_mark, update_date, create_date 
   	</sql>
 	
-	<insert id="insertFollow" parameterType="me.codetalk.ssc.pofo.pojo.UserFollow" useGeneratedKeys="true" keyProperty="id" keyColumn="follow_id">
+	<insert id="insertFollow" parameterType="me.codetalk.flow.pofo.pojo.UserFollow" useGeneratedKeys="true" keyProperty="id" keyColumn="follow_id">
 		insert into pf_follows (user_id, user_followed)
 		values (
 			#{userId}, #{userFollowed}

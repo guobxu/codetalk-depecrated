@@ -13,8 +13,8 @@ public class Constants {
 	public static final String PARAM_ACCESS_TOKEN = "access_token";
 	
 	// App & Module
-    public static final String SSC_APP = "ssc";
-    public static final String SSC_MOD_POFO = "ssc-solv";
+    public static final String FLOW_APP = "flow";
+    public static final String FLOW_MOD_POFO = "flow-solv";
     
     // Exchanges & Queues
     // exc: 发布问题

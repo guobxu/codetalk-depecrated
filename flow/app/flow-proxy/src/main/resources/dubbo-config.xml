@@ -6,12 +6,12 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	    http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 
-    <dubbo:reference id="authService" interface="me.codetalk.ssc.auth.service.IAuthService" retries="0" timeout="5000" check="false"/>
+    <dubbo:reference id="authService" interface="me.codetalk.flow.auth.service.IAuthService" retries="0" timeout="5000" check="false"/>
     
-    <dubbo:reference id="pofoService" interface="me.codetalk.ssc.pofo.service.IPofoService" retries="0" timeout="5000" check="false"/>
+    <dubbo:reference id="pofoService" interface="me.codetalk.flow.pofo.service.IPofoService" retries="0" timeout="5000" check="false"/>
     
-    <dubbo:reference id="solvService" interface="me.codetalk.ssc.solv.service.ISolvService" retries="0" timeout="5000" check="false"/>
+    <dubbo:reference id="solvService" interface="me.codetalk.flow.solv.service.ISolvService" retries="0" timeout="5000" check="false"/>
     
-    <dubbo:reference id="fndService" interface="me.codetalk.ssc.fnd.service.IFndService" retries="0" timeout="5000" check="false"/>
+    <dubbo:reference id="fndService" interface="me.codetalk.flow.fnd.service.IFndService" retries="0" timeout="5000" check="false"/>
 
 </beans>

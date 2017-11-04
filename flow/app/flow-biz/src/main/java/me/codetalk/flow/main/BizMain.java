@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {
@@ -19,6 +20,9 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
         "me.codetalk.flow.auth.support"
 })
 @MapperScan(value = {"me.codetalk.flow.*.mapper"})
+@EnableElasticsearchRepositories(basePackages = {
+		"me.codetalk.flow.solv.elastic.repos",
+})
 @ImportResource(locations = {
 		"classpath:dubbo-config.xml",
 		"classpath:aspectj-config.xml"

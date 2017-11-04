@@ -39,23 +39,23 @@ public class Constants {
     
     // Exchanges & Queues
     // exc 更新fnd user
-    public static final String EXC_USER_UPDATE = "ssc-fnd-ex-user-update";
+//    public static final String EXC_USER_UPDATE = "ssc-fnd-ex-user-update";
 
     // queue: 添加用户 - 创建Fnd User
- 	public static final String QUEUE_USER_ADD_CREATE = "ssc-fnd-queue-user-add-create";
+// 	public static final String QUEUE_USER_ADD_CREATE = "ssc-fnd-queue-user-add-create";
  	
  	// queue: 更新FndUser - 验视图片
- 	public static final String QUEUE_USER_UPDATE_VERIFY_PROFILE = "ssc-fnd-queue-user-update-verify-profile";
+// 	public static final String QUEUE_USER_UPDATE_VERIFY_PROFILE = "ssc-fnd-queue-user-update-verify-profile";
     
  	// queue: 增加tag hit
- 	public static final String QUEUE_TAG_INCR_HIT = "ssc-fnd-queue-tag-incr-hit";
+// 	public static final String QUEUE_TAG_INCR_HIT = "ssc-fnd-queue-tag-incr-hit";
  	
  	public static final String MSG_OLD = "old";
  	public static final String MSG_NEW = "new";
  	
     // App & Module
-    public static final String SSC_APP = "ssc";
-    public static final String SSC_MOD_FND = "ssc-fnd";
+    public static final String FLOW_APP = "flow";
+    public static final String FLOW_MOD_FND = "flow-fnd";
     
     // Response 
     public static final int CODE_SUCCESS = 1;

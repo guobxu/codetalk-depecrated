@@ -1,16 +1,22 @@
 package me.codetalk.flow.solv.service.impl;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Id;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import me.codetalk.flow.fnd.pojo.FndUser;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import me.codetalk.flow.solv.Constants;
+import me.codetalk.flow.solv.elastic.DocQuest;
+import me.codetalk.flow.solv.elastic.repos.QuestRepository;
 import me.codetalk.flow.solv.mapper.ExtQuestMapper;
 import me.codetalk.flow.solv.pojo.ExtQuest;
 import me.codetalk.flow.solv.service.IExtQuestService;
@@ -25,15 +31,25 @@ public class ExtQuestServiceImpl implements IExtQuestService {
 	@Autowired
 	private ExtQuestMapper eqmapper;
 	
+	@Autowired
+	private QuestRepository questRepo;
+	
 	@Override
 	@Transactional
 	public void addExtQuest(ExtQuest quest) {
 		LOGGER.info("Add ext quest, id=" + quest.getId());
 		
+		String qid = quest.getId();
+		if(eqmapper.selectOne(qid) != null) {
+			LOGGER.info("Ext quest with [id = " + qid + "] already exists!");
+			
+			return;
+		}
+		
 		quest.setIndexed(Constants.CONST_YES);
 		eqmapper.insertExtQuest(quest);
-		
-		// TODO
+
+		questRepo.save(extQuest2Doc(quest));
 	}
 
 	@Override
@@ -47,10 +63,81 @@ public class ExtQuestServiceImpl implements IExtQuestService {
 	public void soQuestMigrate(String msgstr) {
 		LOGGER.info("In soQuestMigrate...Receive mesg data = " + msgstr);
 		
-		Message message = (Message)JsonUtils.fromJson(msgstr, Message.class);
-		Map<String, Object> data = (Map<String, Object>)message.getData();
+		Message mesg = (Message)JsonUtils.fromJson(msgstr, Message.class);
+		Map<String, Object> data = (Map<String, Object>)mesg.getData();
 		
-		// TODO
+		// attr list -> map
+		List attrs = (List)data.get("attrs");
+		Map<String, String> attrsMap = new HashMap<>();
+		for(Object attrObj : attrs) {
+			Map<String, Object> attrMap = (Map<String, Object>)attrObj;
+			attrsMap.put((String)attrMap.get("key"), (String)attrMap.get("val"));
+		}
+
+		ExtQuest quest = new ExtQuest();
+		quest.setId(mesg.getKey());
+		quest.setSite((String)data.get("site"));
+		quest.setUrl((String)data.get("pageUrl"));
+		quest.setTitle(attrsMap.get("quest_title"));
+		quest.setContent(attrsMap.get("quest_content"));
+		
+		String questAns = attrsMap.get("quest_answer");
+		quest.setAnswer(questAns == null ? attrsMap.get("quest_top_reply") : questAns);
+		
+		quest.setAnswerAccept("accepted".equals(attrsMap.get("quest_accepted")) ? 1 : 0);
+		
+		quest.setTags(attrsMap.get("quest_tags"));
+		quest.setVotes(Integer.parseInt(attrsMap.get("quest_votes")));
+		
+		addExtQuest(quest);
+	}
+	
+	/**
+	 * 转换为Doc Quest作为索引
+	 * 
+	 * @param eq
+	 * @return
+	 */
+	private DocQuest extQuest2Doc(ExtQuest eq) {
+		DocQuest dq = new DocQuest();
+		dq.setId(eq.getId());
+		dq.setTitle(eq.getTitle());
+		dq.setContent(eq.getContent());
+		dq.setTags(eq.getTags());
+		dq.setVotes(eq.getVotes());
+		dq.setExtUrl(eq.getUrl());
+		dq.setAccepted(eq.getAnswerAccept());
+		
+		return dq;
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

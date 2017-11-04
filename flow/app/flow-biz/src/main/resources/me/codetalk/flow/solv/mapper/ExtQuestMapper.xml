@@ -23,10 +23,10 @@
   	</sql>
 	
 	<insert id="insertExtQuest" parameterType="me.codetalk.flow.solv.pojo.ExtQuest">
-		insert into sv_questions(ext_quest_id, quest_site, quest_url, quest_title, quest_content, quest_answer, 
-	    						 quest_tags, quest_votes, answer_accepted)
+		insert into sv_ext_quests(ext_quest_id, quest_site, quest_url, quest_title, quest_content, quest_answer, 
+	    						 quest_tags, quest_votes, answer_accepted, quest_indexed)
 		values (
-			#{id}, #{site}, #{url}, #{title}, #{content}, #{answer}, #{tags}, #{votes}, #{answerAccept}
+			#{id}, #{site}, #{url}, #{title}, #{content}, #{answer}, #{tags}, #{votes}, #{answerAccept}, #{indexed}
 		)
 	</insert>
 	
@@ -34,7 +34,31 @@
 		update sv_ext_quests set quest_indexed = 1 where ext_quest_id = #{id}
 	</update>
 	
+	<select id="selectOne" parameterType="String" resultType="Integer">
+		select 1 from sv_ext_quests where ext_quest_id = #{id}
+	</select>
+	
 </mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

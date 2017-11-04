@@ -1,9 +1,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="me.codetalk.ssc.fnd.mapper.NoticeMapper">
+<mapper namespace="me.codetalk.flow.fnd.mapper.NoticeMapper">
 
-	<resultMap type="me.codetalk.ssc.fnd.pojo.Notice" id="noticeResultMap">
+	<resultMap type="me.codetalk.flow.fnd.pojo.Notice" id="noticeResultMap">
 		<result property="id" column="notice_id"></result>
 		<result property="userId" column="user_id"></result>
 		<result property="type" column="notice_type"></result>
@@ -28,7 +28,7 @@
 		<result property="createDate" column="create_date"></result>
 	</resultMap>
 
-	<insert id="insertNotice" parameterType="me.codetalk.ssc.fnd.pojo.Notice" useGeneratedKeys="true" keyProperty="id" keyColumn="notice_id">
+	<insert id="insertNotice" parameterType="me.codetalk.flow.fnd.pojo.Notice" useGeneratedKeys="true" keyProperty="id" keyColumn="notice_id">
 		INSERT INTO fnd_notice(
 		   user_id
 		  ,notice_type

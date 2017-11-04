@@ -18,8 +18,8 @@ public class Constants {
 	public static final int POST_TYPE_REFER = 2;
 	
 	// App & Module
-    public static final String SSC_APP = "ssc";
-    public static final String SSC_MOD_POFO = "ssc-pofo";
+    public static final String FLOW_APP = "flow";
+    public static final String FLOW_MOD_POFO = "flow-pofo";
     
     // Exchanges & Queues
     // exc: 发表帖子

@@ -47,14 +47,14 @@ public class ParamCheckerImpl implements IParamChecker {
 	static {
 		/*************************** Auth ***************************/
 		// 用户注册
-		URI_PARAM_MAPPING.put("/ssc/auth/signup", new Param[] {
+		URI_PARAM_MAPPING.put("/flow/auth/signup", new Param[] {
 				new RegexParam("login_name", true, "[A-Za-z0-9][\\w-]{5,19}"),
 				new EmailParam("user_mail", true), 
 				new StringParam("passwd_str", true),
 				new IntParam("position_type", true)});
 		
 		// 用户注册
-		URI_PARAM_MAPPING.put("/ssc/auth/login", new Param[] {
+		URI_PARAM_MAPPING.put("/flow/auth/login", new Param[] {
 				new StringParam("user_name", true),
 				new StringParam("login_auth_str", true), 
 				new IntEnumParam("remember_me", false, new Integer[] {0, 1})});
@@ -62,20 +62,20 @@ public class ParamCheckerImpl implements IParamChecker {
 		/*************************** Fnd ***************************/
 		
 		// 修改用户信息
-		URI_PARAM_MAPPING.put("/ssc/fnd/file/upload", new Param[] {
+		URI_PARAM_MAPPING.put("/flow/fnd/file/upload", new Param[] {
 			PARAM_USER_LOGIN,
 			PARAM_ACCESS_TOKEN
 		});
 		
 		// 获取用户信息
-		URI_PARAM_MAPPING.put("/ssc/fnd/user", new Param[] {
+		URI_PARAM_MAPPING.put("/flow/fnd/user", new Param[] {
 				PARAM_USER_LOGIN,
 				PARAM_ACCESS_TOKEN,
 				new StringParam("user_login_get", false)
 		});
 		
 		// 修改用户信息
-		URI_PARAM_MAPPING.put("/ssc/fnd/user/update", new Param[] {
+		URI_PARAM_MAPPING.put("/flow/fnd/user/update", new Param[] {
 			PARAM_USER_LOGIN,
 			PARAM_ACCESS_TOKEN,
 			new StringParam("user_name", true),
@@ -108,7 +108,7 @@ public class ParamCheckerImpl implements IParamChecker {
 //		});
 		
 		// 发表帖子
-		URI_PARAM_MAPPING.put("/ssc/pofo/post/create", new Param[] {
+		URI_PARAM_MAPPING.put("/flow/pofo/post/create", new Param[] {
 				PARAM_USER_LOGIN,
 				PARAM_ACCESS_TOKEN,
 				new StringParam("post_content", false, true),

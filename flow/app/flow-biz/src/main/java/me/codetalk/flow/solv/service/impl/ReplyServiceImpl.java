@@ -42,7 +42,7 @@ public class ReplyServiceImpl extends HashStatSupport implements IReplyService {
 	private static final String CACHE_STAT_QUEST_REPLY_VOTE = "STAT-QUEST-REPLY-VOTE-";	// 问题回复的vote
 	
 	@Transactional
-	@KafkaAfter(value = "ssc-quest-reply-create", app = "ssc", module = "solv")
+	@KafkaAfter(value = "flow-quest-reply-create", app = "flow", module = "solv")
 	public Reply addReply(Reply reply) {
 		// quest exists TODO
 		reply.setCommentThread(StringUtils.uuid());

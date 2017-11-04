@@ -1,7 +1,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="me.codetalk.ssc.fnd.mapper.UserTagMapper">
+<mapper namespace="me.codetalk.flow.fnd.mapper.UserTagMapper">
 
 	<insert id="deleteUserTags" parameterType="Integer">
 		delete from fnd_user_tags where user_id = #{userId}
