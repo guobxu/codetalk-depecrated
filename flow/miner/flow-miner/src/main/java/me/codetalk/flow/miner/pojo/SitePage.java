@@ -10,6 +10,9 @@ public class SitePage {
 	
 	private String errorMsg;
 	
+	private Integer siteId;
+	private Integer entityTypeId;
+	
 	private Timestamp lastUpdate;
 	private Timestamp createDate;
 	
@@ -61,6 +64,21 @@ public class SitePage {
 		this.errorMsg = errorMsg;
 	}
 	
+	public Integer getSiteId() {
+		return siteId;
+	}
+
+	public void setSiteId(Integer siteId) {
+		this.siteId = siteId;
+	}
+
+	public Integer getEntityTypeId() {
+		return entityTypeId;
+	}
+
+	public void setEntityTypeId(Integer entityTypeId) {
+		this.entityTypeId = entityTypeId;
+	}
 	
 	
 }

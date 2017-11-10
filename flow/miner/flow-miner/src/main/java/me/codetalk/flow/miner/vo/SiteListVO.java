@@ -46,4 +46,5 @@ public class SiteListVO extends SiteList {
 		this.entityAttrs = entityAttrs;
 	}
 	
+	
 }

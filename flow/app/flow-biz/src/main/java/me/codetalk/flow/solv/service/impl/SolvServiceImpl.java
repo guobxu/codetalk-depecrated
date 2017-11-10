@@ -51,6 +51,8 @@ public class SolvServiceImpl extends AbstractBizService implements ISolvService 
 	
 	private static final String URI_REPLY_VOTE = "/flow/solv/reply/vote";
 	
+	private static final String URI_QUEST_MARKSPAM = "/flow/solv/quest/markspam";
+	
 	// URI GET
 	private static final String URI_QUEST_LIST = "/flow/solv/quest/list";
 	private static final String URI_QUEST_DTL = "/flow/solv/quest";
@@ -87,6 +89,7 @@ public class SolvServiceImpl extends AbstractBizService implements ISolvService 
 				URI_COMMENT_ADD,
 				URI_QUEST_ACCEPT,
 				URI_REPLY_VOTE,
+				URI_QUEST_MARKSPAM,
 				
 				// GET
 				
@@ -105,6 +108,8 @@ public class SolvServiceImpl extends AbstractBizService implements ISolvService 
 			return accept(data);
 		} else if(URI_REPLY_VOTE.equals(uri)) {
 			return voteReply(data);
+		} else if(URI_QUEST_MARKSPAM.equals(uri)) {
+			return markSpam(data);
 		}
 		
 		return errorWithKey("sys_uri_notfound");
@@ -436,6 +441,29 @@ public class SolvServiceImpl extends AbstractBizService implements ISolvService 
 			
 			return errorWithMsg(ex.getMessage());
 		}
+		
+		return Constants.RESPONSE_SUCCESS;
+	}
+	
+	/**
+	 * Param:
+	 * {
+		"user_login":"xx"
+		"access_token":"xx"
+		"quest_uuid": "xx" //问题uuid
+		"spam_reason": "xx" // 原因
+		}
+	 * 
+	 * @param data
+	 * @return
+	 */
+	private String markSpam(Map<String, Object> data) {
+		String quuid = data.get("quest_uuid").toString(), 
+				reason = data.get("spam_reason").toString();
+		
+		Integer markBy = getUserLogin().getUserId();
+		
+		questService.markSpam(quuid, markBy, reason);
 		
 		return Constants.RESPONSE_SUCCESS;
 	}

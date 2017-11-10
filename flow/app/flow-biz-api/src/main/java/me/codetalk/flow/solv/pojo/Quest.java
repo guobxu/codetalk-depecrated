@@ -13,7 +13,7 @@ public class Quest {
 	@JsonProperty("quest_id")
 	private Long id;
 	
-	@JsonIgnore
+	@JsonProperty("quest_uuid")
 	private String uuid;
 	
 	@JsonIgnore
@@ -42,6 +42,12 @@ public class Quest {
 	
 	@JsonProperty("quest_spam")
 	private Integer spamMark; // 0 non-spam 1 spam
+	
+	@JsonProperty("quest_spam_by")
+	private Integer spamMarkBy;		// spam mark by 
+	
+	@JsonProperty("quest_spam_reason")
+	private String spamReason;		// spam mark reason
 	
 	@JsonIgnore
 	private Integer indexed;
@@ -173,6 +179,22 @@ public class Quest {
 
 	public void setIndexed(Integer indexed) {
 		this.indexed = indexed;
+	}
+
+	public Integer getSpamMarkBy() {
+		return spamMarkBy;
+	}
+
+	public void setSpamMarkBy(Integer spamMarkBy) {
+		this.spamMarkBy = spamMarkBy;
+	}
+
+	public String getSpamReason() {
+		return spamReason;
+	}
+
+	public void setSpamReason(String spamReason) {
+		this.spamReason = spamReason;
 	}
 
 	

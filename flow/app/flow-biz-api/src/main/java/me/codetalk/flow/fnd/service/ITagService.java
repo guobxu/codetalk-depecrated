@@ -12,4 +12,6 @@ public interface ITagService {
 	
 	public List<Integer> getTagIdByText(List<String> tagList, boolean ignoreCase);
 	
+	public List<String> getTagNamesByIdList(List<Integer> tagIdList);
+	
 }

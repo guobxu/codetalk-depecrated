@@ -57,7 +57,7 @@ public class JsonListPage extends AbstractListPage {
 					JSONObject jobj = (JSONObject)obj;
 					
 					String pageUrl = jobj.getString(attr.getName());
-					Page subPage = new HtmlPage(siteRes[0] +
+					Page subPage = new JsoupHtmlPage(siteRes[0] +
 							( pageUrl.startsWith("/") ? "" : "/" ) +
 							pageUrl);
 					pages.add(subPage);

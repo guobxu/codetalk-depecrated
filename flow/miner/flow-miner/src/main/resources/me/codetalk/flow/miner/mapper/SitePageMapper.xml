@@ -8,13 +8,15 @@
 		<result property="url" column="page_url"></result>
 		<result property="status" column="page_status"></result>
 		<result property="errorMsg" column="error_msg"></result>
+		<result property="siteId" column="site_id"></result>
+		<result property="entityTypeId" column="entity_type_id"></result>
 		<result property="lastUpdate" column="last_update"></result>
 		<result property="createDate" column="create_date"></result>
 	</resultMap>
 
 	<select id="insertPages" parameterType="java.util.List">
-		insert into site_pages (page_id, page_url) values 
-		<foreach collection ="pageList" item="page" index= "index" separator =",">(#{page.id}, #{page.url})</foreach>
+		insert into site_pages (page_id, page_url, site_id, entity_type_id) values 
+		<foreach collection ="pageList" item="page" index= "index" separator =",">(#{page.id}, #{page.url}, #{page.siteId}, #{page.entityTypeId})</foreach>
 	</select>
 	
 	<update id="updatePageStatus" parameterType="me.codetalk.flow.miner.pojo.SitePage">

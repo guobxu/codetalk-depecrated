@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import me.codetalk.webmine.Constants;
@@ -14,12 +13,14 @@ import me.codetalk.webmine.data.WebEntity;
 import me.codetalk.webmine.page.PageAttr;
 import me.codetalk.webmine.util.Utils;
 
-public class HtmlPage extends AbstractPage {
+public abstract class HtmlPage extends AbstractPage {
 
 	public HtmlPage(String url) {
 		super(url);
 	}
 
+	protected abstract Document getDocument() throws IOException;
+	
 	@Override
 	public WebEntity fetchEntity(Map<String, PageAttr> attrMap) throws IOException {
 		WebEntity entity = new WebEntity();
@@ -31,7 +32,7 @@ public class HtmlPage extends AbstractPage {
 		
 		Map<String, String> attrs = new HashMap<String, String>();
 		
-		Document doc = Jsoup.connect(url).get();
+		Document doc = getDocument();
 		attrMap.forEach((k, v) -> {
 			Elements els = doc.select(v.getEl());
 			if(els.isEmpty()) {

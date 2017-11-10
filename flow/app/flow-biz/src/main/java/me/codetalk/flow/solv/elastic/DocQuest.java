@@ -1,20 +1,27 @@
 package me.codetalk.flow.solv.elastic;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonInclude(Include.NON_NULL)
 @Document(indexName = "flow-solv", type="quest")
 public class DocQuest implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@Id
 	@JsonProperty("quest_id")
-	private String id;
+	private Long questId;
+	
+	@Id
+	@JsonProperty("quest_uuid")
+	private String uuid;
 	
 	@JsonProperty("quest_title")
 	private String title;
@@ -28,20 +35,34 @@ public class DocQuest implements Serializable {
 	@JsonProperty("quest_votes")
 	private Integer votes;
 	
+	@JsonProperty("ext_quest_site")
+	private String extSite;
+	
 	@JsonProperty("ext_quest_url")
 	private String extUrl;
 	
 	@JsonProperty("quest_accepted")
 	private Integer accepted;
 	
+	@JsonProperty("create_date")
+	private Timestamp createDate;
+	
 	public DocQuest() {}
 	
-	public String getId() {
-		return id;
+	public Long getQuestId() {
+		return questId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setQuestId(Long questId) {
+		this.questId = questId;
+	}
+	
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 	public String getTitle() {
@@ -91,6 +112,22 @@ public class DocQuest implements Serializable {
 	public void setAccepted(Integer accepted) {
 		this.accepted = accepted;
 	}
-	
+
+	public Timestamp getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Timestamp createDate) {
+		this.createDate = createDate;
+	}
+
+	public String getExtSite() {
+		return extSite;
+	}
+
+	public void setExtSite(String extSite) {
+		this.extSite = extSite;
+	}
+
 	
 }

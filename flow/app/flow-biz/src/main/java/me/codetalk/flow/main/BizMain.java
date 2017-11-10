@@ -21,7 +21,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 })
 @MapperScan(value = {"me.codetalk.flow.*.mapper"})
 @EnableElasticsearchRepositories(basePackages = {
-		"me.codetalk.flow.solv.elastic.repos",
+		"me.codetalk.flow.*.elastic.repos",
 })
 @ImportResource(locations = {
 		"classpath:dubbo-config.xml",

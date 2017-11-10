@@ -16,7 +16,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ExtQuest {
 
 	@JsonProperty("ext_quest_id")
-	private String id;
+	private Long id;
+	
+	@JsonProperty("ext_quest_uuid")
+	private String uuid;
 	
 	@JsonProperty("ext_quest_site")
 	private String site;
@@ -42,12 +45,20 @@ public class ExtQuest {
 	@JsonProperty("create_date")
 	private Timestamp createDate;
 
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 	public String getSite() {

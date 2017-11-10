@@ -5,6 +5,7 @@
 
 	<resultMap type="me.codetalk.flow.solv.pojo.ExtQuest" id="extQuestResultMap">
 		<result property="id" column="ext_quest_id"></result>
+		<result property="uuid" column="quest_uuid"></result>
 		<result property="site" column="quest_site"></result>
 		<result property="url" column="quest_url"></result>
 		<result property="title" column="quest_title"></result>
@@ -18,15 +19,15 @@
 	</resultMap>
 	
 	<sql id="Base_Column_List">
-	    ext_quest_id, quest_site, quest_url, quest_title, quest_content, quest_answer, 
+	    ext_quest_id, quest_uuid, quest_site, quest_url, quest_title, quest_content, quest_answer, 
 	    quest_tags, quest_votes, answer_accepted, quest_indexed, create_date 
   	</sql>
 	
-	<insert id="insertExtQuest" parameterType="me.codetalk.flow.solv.pojo.ExtQuest">
-		insert into sv_ext_quests(ext_quest_id, quest_site, quest_url, quest_title, quest_content, quest_answer, 
+	<insert id="insertExtQuest" parameterType="me.codetalk.flow.solv.pojo.ExtQuest" useGeneratedKeys="true" keyProperty="id" keyColumn="ext_quest_id">
+		insert into sv_ext_quests(quest_uuid, quest_site, quest_url, quest_title, quest_content, quest_answer, 
 	    						 quest_tags, quest_votes, answer_accepted, quest_indexed)
 		values (
-			#{id}, #{site}, #{url}, #{title}, #{content}, #{answer}, #{tags}, #{votes}, #{answerAccept}, #{indexed}
+			#{uuid}, #{site}, #{url}, #{title}, #{content}, #{answer}, #{tags}, #{votes}, #{answerAccept}, #{indexed}
 		)
 	</insert>
 	
@@ -35,7 +36,7 @@
 	</update>
 	
 	<select id="selectOne" parameterType="String" resultType="Integer">
-		select 1 from sv_ext_quests where ext_quest_id = #{id}
+		select 1 from sv_ext_quests where quest_uuid = #{uuid}
 	</select>
 	
 </mapper>

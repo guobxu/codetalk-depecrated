@@ -13,6 +13,7 @@ public class SiteList {
 	private String pagesAttr;
 	
 	private Integer lastPage;
+	private Integer maxPage;
 	private String pageParam;
 	private Integer enabled;
 	
@@ -28,6 +29,10 @@ public class SiteList {
 		int cp = lastPage + 1;
 		
 		return pageParam == null ? pagesEl : pagesEl.replaceAll("\\{" + pageParam + "\\}", String.valueOf(cp));
+	}
+	
+	public boolean exceedMaxPage() {
+		return lastPage + 1 > maxPage;
 	}
 	
 	public Integer getId() {
@@ -116,6 +121,14 @@ public class SiteList {
 
 	public void setEntityTypeId(Integer entityTypeId) {
 		this.entityTypeId = entityTypeId;
+	}
+
+	public Integer getMaxPage() {
+		return maxPage;
+	}
+
+	public void setMaxPage(Integer maxPage) {
+		this.maxPage = maxPage;
 	}
 	
 	

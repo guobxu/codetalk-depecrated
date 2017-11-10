@@ -19,7 +19,7 @@ public class Constants {
 	
 	// App & Module
     public static final String FLOW_APP = "flow";
-    public static final String FLOW_MOD_POFO = "flow-pofo";
+    public static final String FLOW_MOD_POFO = "pofo";
     
     // Exchanges & Queues
     // exc: 发表帖子

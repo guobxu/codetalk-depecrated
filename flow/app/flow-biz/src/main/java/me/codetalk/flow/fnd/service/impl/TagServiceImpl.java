@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import me.codetalk.cache.service.ICacheService;
 import me.codetalk.messaging.Message;
+import me.codetalk.util.JsonUtils;
 import me.codetalk.flow.fnd.mapper.TagMapper;
 import me.codetalk.flow.fnd.pojo.Tag;
 import me.codetalk.flow.fnd.pojo.TagVO;
@@ -68,6 +69,20 @@ public class TagServiceImpl implements ITagService {
 		return tagIdList;
 	}
 	
+	@Override
+	public List<String> getTagNamesByIdList(List<Integer> tagIdList) {
+		List<Tag> tags = findAllTags();
+		
+		List<String> tagNames = new ArrayList<String>();
+		for(Tag tag : tags) {
+			if(tagIdList.contains(tag.getId())) {
+				tagNames.add(tag.getText());
+			}
+		}
+		
+		return tagNames;
+	}
+	
 	private List<Tag> findAllTags() {
 		List<Tag> allTags = (List<Tag>)cacheService.get(CACHE_TAGS);
 		
@@ -82,10 +97,12 @@ public class TagServiceImpl implements ITagService {
 	// Kafka listeners
 	
 	@KafkaListener(topics = "flow-quest-create", groupId = "flow-quest-create-fnd-tag-incr")
-    public void msgIncrHit(Message message) {
-		LOGGER.info("In incrHit...Receive mesg data = " + message.getData());
+    public void msgIncrHit(String msgstr) {
+		LOGGER.info("In incrHit...Receive mesg data = " + msgstr);
 		
-		List<Integer> tags = (List<Integer>)( (Map<String, Object>)message.getData() ).get("tags");
+		Message mesg = (Message)JsonUtils.fromJson(msgstr, Message.class);
+		
+		List<Integer> tags = (List<Integer>)( (Map<String, Object>)mesg.getData() ).get("tags");
 		incrHits(tags);
     }
 	

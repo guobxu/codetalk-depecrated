@@ -25,6 +25,15 @@ public interface IQuestService {
 	public QuestVO getQuestVOById(Long questId);
 	
 	/**
+	 * 标记spam
+	 *  
+	 * @param quuid 
+	 * @param userId	标记问题为spam的当前用户
+	 * @param reason	原因
+	 */
+	public void markSpam(String quuid, Integer markBy, String reason);
+	
+	/**
 	 * 接受答复
 	 * 
 	 * @param userId 当前用户

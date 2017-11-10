@@ -12,6 +12,7 @@
 		<result property="pagesEl" column="list_pages_el"></result>
 		<result property="pagesAttr" column="list_pages_attr"></result>
 		<result property="lastPage" column="last_page"></result>
+		<result property="maxPage" column="max_page"></result>
 		<result property="pageParam" column="page_param"></result>
 		<result property="enabled" column="list_enabled"></result>
 		<result property="createDate" column="create_date"></result>
@@ -33,7 +34,7 @@
 	
 	<select id="selectFirstActive" resultMap="siteListVOMap">
 		select list_id, sl.site_id, sl.entity_type_id, list_url, list_type, 
-			 list_pages_el, list_pages_attr, last_page, page_param, 
+			 list_pages_el, list_pages_attr, last_page, max_page, page_param, 
 			 list_enabled, sl.create_date, s.site_home, s.site_name, et.entity_type, 
 			 ea.attr_key, ea.attr_type, ea.attr_el, ea.attr_name
 		  from (select * from site_lists where list_enabled = 1 limit 0, 1) sl, 
@@ -41,6 +42,36 @@
 		 where sl.site_id = s.site_id 
 			 and sl.entity_type_id = et.entity_type_id 
 		   and sl.entity_type_id = ea.entity_type_id 
+	</select>
+	
+	<select id="selectFirstActiveListBySite" resultMap="siteListVOMap">
+		select sl.min_list_id list_id, sl.site_id, sl2.entity_type_id, sl2.list_url, sl2.list_type, 
+			 sl2.list_pages_el, sl2.list_pages_attr, sl2.last_page, sl2.max_page, sl2.page_param, 
+			 sl2.list_enabled, sl2.create_date, s.site_home, s.site_name, et.entity_type, 
+			 ea.attr_key, ea.attr_type, ea.attr_el, ea.attr_name
+		  from (select site_id, min(list_id) min_list_id from site_lists where list_enabled = 1 group by site_id) sl, 
+					 site_lists sl2, sites s, site_entity_types et, site_entity_attrs ea
+		 where sl.min_list_id = sl2.list_id
+			 and sl.site_id = s.site_id 
+			 and sl2.entity_type_id = et.entity_type_id 
+		   and sl2.entity_type_id = ea.entity_type_id 
+	</select>
+	
+	<select id="selectActiveLists" resultMap="siteListVOMap">
+		select list_id, sl.site_id, sl.entity_type_id, list_url, list_type, 
+			 list_pages_el, list_pages_attr, last_page, max_page, page_param, 
+			 list_enabled, sl.create_date, s.site_home, s.site_name, et.entity_type, 
+			 ea.attr_key, ea.attr_type, ea.attr_el, ea.attr_name
+		from site_lists sl, sites s, site_entity_types et, site_entity_attrs ea
+	 where sl.list_enabled = 1
+		 and sl.site_id = s.site_id 
+		 and sl.entity_type_id = et.entity_type_id 
+		 and sl.entity_type_id = ea.entity_type_id 
+	 order by site_id asc, entity_type_id asc, list_id asc
+	</select>
+		
+	<select id="selectListEnabled" parameterType="Integer" resultType="Integer">
+		select list_enabled from site_lists where list_id = #{listId}
 	</select>
 		
 	<update id="updateListDisabled" parameterType="map">

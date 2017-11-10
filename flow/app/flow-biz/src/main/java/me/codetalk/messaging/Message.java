@@ -29,6 +29,10 @@ public class Message implements Serializable {
 	
 	private Timestamp createDate;
 	
+	public static Builder builder() {
+		return new Builder();
+	}
+	
 	public Object getData() {
 		return data;
 	}
@@ -114,7 +118,65 @@ public class Message implements Serializable {
 					+ module + ", data = [" + data + "]";
 	}
 
-
+	public static class Builder {
+		
+		private Message mesg = new Message();
+		
+		public Message build() {
+			return mesg;
+		}
+		
+		public Builder key(String key) {
+			mesg.setKey(key);
+			
+			return this;
+		}
+		
+		public Builder app(String app) {
+			mesg.setApp(app);
+			
+			return this;
+		}
+		
+		public Builder module(String module) {
+			mesg.setModule(module);
+			
+			return this;
+		}
+		
+		public Builder data(Object data) {
+			mesg.setData(data);
+			
+			return this;
+		}
+		
+		public Builder attr1(String attr1) {
+			mesg.setAttribute1(attr1);
+			
+			return this;
+		}
+		public Builder attr2(String attr2) {
+			mesg.setAttribute2(attr2);
+			
+			return this;
+		}
+		public Builder attr3(String attr3) {
+			mesg.setAttribute3(attr3);
+			
+			return this;
+		}
+		public Builder attr4(String attr4) {
+			mesg.setAttribute4(attr4);
+			
+			return this;
+		}
+		public Builder attr5(String attr5) {
+			mesg.setAttribute5(attr5);
+			
+			return this;
+		}
+		
+	}
 	
 	
 }

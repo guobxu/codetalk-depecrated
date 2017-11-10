@@ -59,7 +59,7 @@ public class Constants {
     
     // App & Module
     public static final String FLOW_APP = "flow";
-    public static final String FLOW_MOD_AUTH = "flow-auth";
+    public static final String FLOW_MOD_AUTH = "auth";
     
     // Response 
     public static final int CODE_SUCCESS = 1;

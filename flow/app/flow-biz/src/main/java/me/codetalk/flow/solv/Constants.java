@@ -14,7 +14,7 @@ public class Constants {
 	
 	// App & Module
     public static final String FLOW_APP = "flow";
-    public static final String FLOW_MOD_POFO = "flow-solv";
+    public static final String FLOW_MOD_SOLV = "solv";
     
     // Exchanges & Queues
     // exc: 发布问题
@@ -29,6 +29,9 @@ public class Constants {
  	// queue: 发布回复 - 通知
 // 	public static final String QUEUE_REPLY_ADD_NOTIF = "ssc-solv-queue-reply-add-notif";
  	
+    // kafka topics
+    public static final String TOPIC_QUEST_CREATE = "flow-quest-create";
+    
     // Response 
     public static final int CODE_SUCCESS = 1;
     public static final int CODE_ERROR = 2;

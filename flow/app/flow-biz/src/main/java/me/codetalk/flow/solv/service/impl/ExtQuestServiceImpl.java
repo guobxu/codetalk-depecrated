@@ -1,5 +1,6 @@
 package me.codetalk.flow.solv.service.impl;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,12 +8,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.Id;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import me.codetalk.flow.solv.Constants;
 import me.codetalk.flow.solv.elastic.DocQuest;
@@ -37,11 +35,11 @@ public class ExtQuestServiceImpl implements IExtQuestService {
 	@Override
 	@Transactional
 	public void addExtQuest(ExtQuest quest) {
-		LOGGER.info("Add ext quest, id=" + quest.getId());
+		LOGGER.info("Add ext quest, uuid=" + quest.getUuid());
 		
-		String qid = quest.getId();
-		if(eqmapper.selectOne(qid) != null) {
-			LOGGER.info("Ext quest with [id = " + qid + "] already exists!");
+		String quid = quest.getUuid();
+		if(eqmapper.selectOne(quid) != null) {
+			LOGGER.info("Ext quest with [uuid = " + quid + "] already exists!");
 			
 			return;
 		}
@@ -75,7 +73,7 @@ public class ExtQuestServiceImpl implements IExtQuestService {
 		}
 
 		ExtQuest quest = new ExtQuest();
-		quest.setId(mesg.getKey());
+		quest.setUuid(mesg.getKey());
 		quest.setSite((String)data.get("site"));
 		quest.setUrl((String)data.get("pageUrl"));
 		quest.setTitle(attrsMap.get("quest_title"));
@@ -100,13 +98,16 @@ public class ExtQuestServiceImpl implements IExtQuestService {
 	 */
 	private DocQuest extQuest2Doc(ExtQuest eq) {
 		DocQuest dq = new DocQuest();
-		dq.setId(eq.getId());
+		dq.setQuestId(eq.getId());
+		dq.setUuid(eq.getUuid());
 		dq.setTitle(eq.getTitle());
 		dq.setContent(eq.getContent());
 		dq.setTags(eq.getTags());
 		dq.setVotes(eq.getVotes());
+		dq.setExtSite(eq.getSite());
 		dq.setExtUrl(eq.getUrl());
 		dq.setAccepted(eq.getAnswerAccept());
+		dq.setCreateDate(new Timestamp(System.currentTimeMillis()));
 		
 		return dq;
 	}

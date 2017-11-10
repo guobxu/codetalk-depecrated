@@ -15,6 +15,8 @@
 		<result property="dupMark" column="dup_mark"></result>
 		<result property="dupQid" column="dup_qid"></result>
 		<result property="spamMark" column="spam_mark"></result>
+		<result property="spamMarkBy" column="spam_mark_by"></result>
+		<result property="spamReason" column="spam_mark_reason"></result>
 		<result property="indexed" column="quest_indexed"></result>
 		<result property="createDate" column="create_date"></result>
 		<result property="updateDate" column="update_date"></result>
@@ -47,13 +49,13 @@
 	
 	<sql id="Base_Column_List">
 	    quest_id,quest_uuid,user_id,quest_title,quest_content,quest_plus,quest_status,
-	    notify_users,dup_mark,dup_qid,spam_mark, quest_indexed, create_date, update_date, update_by
+	    notify_users,dup_mark,dup_qid,spam_mark, spam_mark_by, spam_mark_reason, quest_indexed, create_date, update_date, update_by
   	</sql>
 	
 	<insert id="insertQuestion" parameterType="me.codetalk.flow.solv.pojo.Quest" useGeneratedKeys="true" keyProperty="id" keyColumn="quest_id">
-		insert into sv_quests(quest_uuid, user_id, quest_title, quest_content, quest_status, notify_users, update_by)
+		insert into sv_quests(quest_uuid, user_id, quest_title, quest_content, quest_status, quest_indexed, notify_users, update_by)
 		values (
-			#{uuid}, #{userId}, #{title}, #{content}, #{status}, #{notifyUsers}, #{updateBy}
+			#{uuid}, #{userId}, #{title}, #{content}, #{status}, #{indexed}, #{notifyUsers}, #{updateBy}
 		)
 	</insert>
 	
@@ -115,6 +117,13 @@
 	
 	<update id="updateStatus" parameterType="map">
 		update sv_quests set quest_status = #{status} where quest_id = #{id} 
+	</update>
+	
+	<update id="markSpam" parameterType="map">
+		update sv_quests 
+		   set spam_mark = 1, spam_mark_by = #{markBy}, spam_mark_reason = #{reason},
+		   	   update_date = CURRENT_TIMESTAMP, update_by = #{markBy}
+		 where quest_uuid = #{quuid} 	
 	</update>
 	
 </mapper>

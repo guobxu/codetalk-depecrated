@@ -1,19 +1,25 @@
 package me.codetalk.flow.solv.service.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import me.codetalk.flow.fnd.service.ITagService;
 import me.codetalk.flow.fnd.stat.redis.HashStatSupport;
 import me.codetalk.flow.solv.Constants;
+import me.codetalk.flow.solv.elastic.DocQuest;
+import me.codetalk.flow.solv.elastic.repos.QuestRepository;
 import me.codetalk.flow.solv.exception.SolvServiceException;
 import me.codetalk.flow.solv.mapper.QuestMapper;
 import me.codetalk.flow.solv.mapper.QuestTagMapper;
@@ -24,7 +30,10 @@ import me.codetalk.flow.solv.pojo.ReplyVO;
 import me.codetalk.flow.solv.service.IQuestService;
 import me.codetalk.flow.solv.service.IReplyService;
 import me.codetalk.mesg.KeyedMessages;
+import me.codetalk.messaging.Message;
 import me.codetalk.messaging.kafka.aspect.annotation.KafkaAfter;
+import me.codetalk.util.JsonUtils;
+import me.codetalk.util.ListUtils;
 import me.codetalk.util.StringUtils;
 
 @Service
@@ -45,20 +54,43 @@ public class QuestServiceImpl extends HashStatSupport implements IQuestService {
 	private ReplyMapper replyMapper;
 	
 	@Autowired
+	private ITagService tagService;
+	
+	@Autowired
+	private QuestRepository questRepo;
+	
+	@Autowired
 	private KeyedMessages km;
+	
+	@Autowired
+	private KafkaTemplate<String, String> kafkaTemplate;
 	
 	// Stat Cache
 	private static final String CACHE_STAT_QUEST_REPLY = "STAT-QUEST-REPLY-";	// 回复
 	private static final String CACHE_STAT_QUEST_CMNT = "STAT-QUEST-CMNT-";	// 评论
 	
 	@Transactional
-	@KafkaAfter(value = "flow-quest-create", app = "flow", module = "solv")
 	public Quest publishQuest(Quest q, List<Integer> tags) {
 		q.setUuid(StringUtils.uuid());
+		q.setIndexed(Constants.CONST_YES);
 		questMapper.insertQuestion(q);
 		
 		// tags
 		qtMapper.insertQuestTags(q.getId(), tags);
+		
+		// ES index
+		DocQuest dq = quest2Doc(q, tags);
+		questRepo.save(dq);
+		
+		// Send message
+		Map<String, Object> data = new HashMap<>();
+		data.put("quest", q);
+		data.put("tags", tags);
+		Message mesg = Message.builder().key(StringUtils.uuid())
+										.app(Constants.FLOW_APP)
+										.module(Constants.FLOW_MOD_SOLV)
+										.data(data).build();
+		kafkaTemplate.send(Constants.TOPIC_QUEST_CREATE, mesg.getKey(), JsonUtils.toJson(mesg));
 		
 		return q; 
 	}
@@ -170,6 +202,41 @@ public class QuestServiceImpl extends HashStatSupport implements IQuestService {
 
 		questMapper.updateStatus(reply.getQuestId(), Constants.QUEST_STATUS_SOLVED);
 		replyMapper.updateAccepted(replyId);
+	}
+	
+	@Override
+	@Transactional
+	public void markSpam(String quuid, Integer markBy, String reason) {
+		questMapper.markSpam(quuid, markBy, reason);
+		
+		questRepo.delete(quuid);
+		
+		// TODO: notice
+	}
+	
+	/**
+	 * 转换为Doc Quest作为索引
+	 * 
+	 * @param q
+	 * @param tags
+	 * @return
+	 */
+	private DocQuest quest2Doc(Quest q, List<Integer> tags) {
+		DocQuest dq = new DocQuest();
+		dq.setQuestId(q.getId());
+		dq.setUuid(q.getUuid());
+		dq.setTitle(q.getTitle());
+		dq.setContent(q.getContent());
+		
+		// tags
+		String tagstr = ListUtils.concat(tagService.getTagNamesByIdList(tags), " ");
+		dq.setTags(tagstr);
+		dq.setVotes(0);
+		// dq.setExtUrl(q.getUrl());
+		dq.setAccepted(Constants.CONST_NO);
+		dq.setCreateDate(new Timestamp(System.currentTimeMillis()));
+		
+		return dq;
 	}
 	
 	// STAT

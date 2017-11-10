@@ -21,4 +21,6 @@ public interface QuestMapper {
 	
 	public void updateStatus(@Param("id") Long questId, @Param("status") Integer status);
 	
+	public void markSpam(@Param("quuid") String quuid, @Param("markBy") Integer markBy, @Param("reason") String reason);
+	
 }

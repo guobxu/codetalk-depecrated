@@ -4,10 +4,15 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +35,10 @@ import me.codetalk.messaging.kafka.IMessagingService;
 import me.codetalk.webmine.page.ListPage;
 import me.codetalk.webmine.page.Page;
 import me.codetalk.webmine.page.PageAttr;
-import me.codetalk.webmine.page.impl.HtmlListPage;
 import me.codetalk.webmine.page.impl.HtmlPage;
+import me.codetalk.webmine.page.impl.HttpClientHtmlListPage;
 import me.codetalk.webmine.page.impl.JsonListPage;
+import me.codetalk.webmine.page.impl.JsoupHtmlListPage;
 
 @Component
 public class MinerRunner implements CommandLineRunner {
@@ -56,19 +62,78 @@ public class MinerRunner implements CommandLineRunner {
 	
 	private final long sleepInit = 60 * 1000L;	// 休眠, 避免429 - too many requests
 	
-	private long sleepMillis = sleepInit;
+	private final Map<Integer, Long> siteSleep = new ConcurrentHashMap<>();
 	
 	private Random rand = new Random();
 	
+	// sites lock
+//	private Object sitesLock = new Object();
+	
+	// site running status
+	private Map<Integer, Boolean> siteStatus = new HashMap<>();
+	
+	// count down
+	private CountDownLatch siteLatch = null;
+	
 	@Override
-	public void run(String... args) throws Exception {
-		// 1. choose active list
-		SiteListVO list = null;
-		while(true) {
-			list = slmapper.selectFirstActive();
-			if(list == null) return;
+	public synchronized void run(String... args) throws Exception {
+		// 1. select active lists
+		List<SiteListVO> lists = slmapper.selectActiveLists();
+		if(lists.isEmpty()) return;
+		
+		// map: siteId => List<SiteListVO>
+		Map<Integer, List<SiteListVO>> siteListMap = new HashMap<>();
+		for(SiteListVO list : lists) {
+			Integer siteId = list.getSiteId();
 			
-			processList(list);
+			List<SiteListVO> subLists = siteListMap.get(siteId);
+			if(subLists == null) {
+				subLists = new ArrayList<>();
+				siteListMap.put(siteId, subLists);
+			}
+			subLists.add(list);
+		}
+		
+		// map: siteId => iterator
+		Map<Integer, Iterator<SiteListVO>> siteIterMap = new HashMap<>();
+		siteListMap.forEach((siteId, siteList) -> {
+			siteIterMap.put(siteId, siteList.iterator());
+			
+			siteStatus.put(siteId, Boolean.FALSE);
+			siteSleep.put(siteId, sleepInit);
+		});
+		
+		// 1.1 executor & latch
+		int threads = siteListMap.size();
+		ExecutorService executor = Executors.newFixedThreadPool(threads);
+		siteLatch = new CountDownLatch(threads);
+		
+		while(true) {
+			siteIterMap.forEach((siteId, listIter) -> {
+				if(siteStatus.get(siteId)) {
+					return; 
+				}
+				
+				if(!listIter.hasNext()) {
+					siteLatch.countDown(); // site has no more list, then count down
+					
+					return;
+				}
+					
+				executor.submit(() -> {
+					siteStatus.put(siteId, Boolean.TRUE);
+					
+					processList(listIter.next());
+				});
+			});
+			
+			if(siteLatch.getCount() == 0) {
+				executor.shutdown();
+				
+				return; // all done
+			}
+			
+			wait();
 		}
 
 	}
@@ -76,16 +141,36 @@ public class MinerRunner implements CommandLineRunner {
 	private void processList(SiteListVO list) {
 		while(true) {
 			// 2. fetch sub pages
+			
+			// 2.1 make sure list still enabled
+			Integer listEnabled = slmapper.selectListEnabled(list.getId());
+			if(listEnabled == 0) {
+				listDoneNotify(list);
+				
+				return;
+			}
+			
+			// 2.2 make sure not exceed max page
+			if(list.exceedMaxPage()) {
+				slmapper.updateListDisabled(list.getId(), "Max page reached!");
+				listDoneNotify(list);
+				
+				return;
+			}
+			
 			String url = list.getDerivedUrl(); // derived url
+			Integer siteId = list.getSiteId();
 			
 			LOGGER.info("===============> Start to process list url: " + url);
 			
 			Integer type = list.getType();
 			ListPage listPage = null;
 			if(type == Constants.LIST_TYPE_HTML) {
-				listPage = new HtmlListPage(url);
+				listPage = new JsoupHtmlListPage(url);
 			} else if(type == Constants.LIST_TYPE_JSON) {
 				listPage = new JsonListPage(url);
+			} else if(type == Constants.LIST_TYPE_HTML_HTTPCLIENT) {
+				listPage = new HttpClientHtmlListPage(url);
 			} else {
 				throw new IllegalArgumentException("Err list type");
 			}
@@ -104,10 +189,21 @@ public class MinerRunner implements CommandLineRunner {
 				LOGGER.error(ioe.getMessage(), ioe);
 				LOGGER.info("===============> Error fetch sub pages of url: " + url);
 				
+				if(getSiteSleep(siteId) > sleepInit * 4) {	// disable for too much wait - add 1106
+					setSiteSleep(siteId, sleepInit);
+					
+					slmapper.updateListDisabled(list.getId(), "Error fetch sub page after 3 times retry, list disabled!");
+					listDoneNotify(list);
+					
+					return;
+				}
+				
 				// retry later
 				try {
+					long sleepMillis = getSiteSleep(siteId);
 					Thread.sleep(sleepMillis);
-					sleepMillis *= 2;
+					
+					setSiteSleep(siteId, sleepMillis * 2);
 				} catch(InterruptedException ex) {
 					LOGGER.error(ex.getMessage(), ex);
 				}
@@ -115,17 +211,21 @@ public class MinerRunner implements CommandLineRunner {
 				continue;
 			}
 			
-			sleepMillis = sleepInit;
+			setSiteSleep(siteId, sleepInit);
 			
 			if(pages.isEmpty()) {
 				slmapper.updateListDisabled(list.getId(), "No sub page found!");
+				listDoneNotify(list);
 				
 				return;
 			}
 			
-			processPages(pages, list.getSiteId(), list.getSiteName(), list.getEntityTypeId(), list.getEntityType(), list.getEntityAttrs());
+			processPages(pages, siteId, list.getSiteName(), list.getEntityTypeId(), list.getEntityType(), list.getEntityAttrs());
 			
 			if(list.getPageParam() == null) {	// 非分页, 直接返回
+				slmapper.updateListDisabled(list.getId(), "List page finished!");
+				listDoneNotify(list);
+				
 				return;
 			}  else {
 				slmapper.incrLastPage(list.getId());
@@ -135,14 +235,35 @@ public class MinerRunner implements CommandLineRunner {
 		
 	}
 	
+	private long getSiteSleep(Integer siteId) {
+		return siteSleep.get(siteId);
+	}
+	
+	private void setSiteSleep(Integer siteId, Long sleepMillis) {
+		siteSleep.put(siteId, sleepMillis);
+	}
+	
+	private synchronized void listDoneNotify(SiteListVO list) {
+		siteStatus.put(list.getSiteId(), Boolean.FALSE);
+//		sitesLock.notify();
+		notify();
+	}
+	
 	private void processPages(List<Page> pages, Integer siteId, String siteName, Integer entityTypeId, String entityType, List<SiteEntityAttr> entityAttrs) {
 		// 3. insert site pages
 		// 3-1. filter 
-		List<String> urlList = new ArrayList<String>();
-		for(Page page : pages) urlList.add(page.getUrl());
+		// create mapping: url -> page
+		Map<String, Page> urlPageMap = new HashMap<>(); // url->Page mapping
 		
-		List<String> existingUrls = spmapper.selectUrlIn(urlList);
+		List<String> urlList = new ArrayList<String>();
+		for(Page page : pages) {
+			urlList.add(page.getUrl());
+			
+			urlPageMap.put(page.getUrl(), page);
+		}
 
+		List<String> existingUrls = spmapper.selectUrlIn(urlList);
+		
 		List<SitePage> sitePages = new ArrayList<SitePage>();
 		for(Page page : pages) {
 			if(existingUrls.contains(page.getUrl())) continue;
@@ -150,6 +271,8 @@ public class MinerRunner implements CommandLineRunner {
 			SitePage sp = new SitePage();
 			sp.setId(UUID.randomUUID().toString());
 			sp.setUrl(page.getUrl());
+			sp.setSiteId(siteId);
+			sp.setEntityTypeId(entityTypeId);
 			
 			sitePages.add(sp);
 		}
@@ -170,7 +293,7 @@ public class MinerRunner implements CommandLineRunner {
 			String pageUrl = sp.getUrl();
 			LOGGER.info("===============> Start to process page url: " + pageUrl);
 			
-			Page page = new HtmlPage(pageUrl);
+			Page page = urlPageMap.get(pageUrl);
 			try {
 				me.codetalk.webmine.data.WebEntity we = page.fetchEntity(attrMap);
 				
@@ -182,7 +305,7 @@ public class MinerRunner implements CommandLineRunner {
 				}
 				
 				// reset sleep millis
-				sleepMillis = sleepInit;
+				setSiteSleep(siteId, sleepInit);
 				
 				// 4.2 convert & insert web entity
 				WebEntity entity = new WebEntity();
@@ -231,8 +354,10 @@ public class MinerRunner implements CommandLineRunner {
 				// retry later
 				if(ex instanceof IOException) {
 					try {
+						long sleepMillis = getSiteSleep(siteId);
 						Thread.sleep(sleepMillis);
-						sleepMillis *= 2;
+						
+						setSiteSleep(siteId, sleepMillis * 2);
 					} catch(InterruptedException iex) {
 						LOGGER.error(iex.getMessage(), iex);
 					}

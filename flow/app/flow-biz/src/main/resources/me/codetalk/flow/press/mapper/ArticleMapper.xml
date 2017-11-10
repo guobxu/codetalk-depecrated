@@ -1,0 +1,47 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.codetalk.flow.press.mapper.ArticleMapper">
+         
+	<resultMap type="me.codetalk.flow.press.pojo.Article" id="articleResultMap">
+		<result property="id" column="article_id"></result>
+		<result property="uuid" column="article_uuid"></result>
+		<result property="site" column="article_site"></result>
+		<result property="url" column="article_url"></result>
+		<result property="title" column="article_title"></result>
+		<result property="summary" column="article_summary"></result>
+		<result property="content" column="article_content"></result>
+		<result property="tags" column="article_tags"></result>
+		<result property="indexed" column="article_indexed"></result>
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+	    article_id, article_uuid, article_site, article_url, article_title, article_summary, article_content, 
+	    article_tags, article_indexed, create_date
+  	</sql>
+	
+	<insert id="insertArticle" parameterType="me.codetalk.flow.press.pojo.Article" useGeneratedKeys="true" keyProperty="id" keyColumn="comment_id">
+		insert into prs_articles (article_uuid, article_site, article_url, article_title, article_summary, article_content, 
+	    						  article_tags, article_indexed)
+		values (
+			#{uuid}, #{site}, #{url}, #{title}, #{summary}, #{content}, #{tags}, #{indexed}
+		)
+	</insert>
+	
+	<select id="selectOne" parameterType="String" resultType="Integer">
+		select 1 from prs_articles where article_uuid = #{uuid}
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
