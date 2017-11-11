@@ -20,6 +20,7 @@ import me.codetalk.flow.solv.pojo.ExtQuest;
 import me.codetalk.flow.solv.service.IExtQuestService;
 import me.codetalk.messaging.Message;
 import me.codetalk.util.JsonUtils;
+import me.codetalk.util.StringUtils;
 
 @Service("extQuestService")
 public class ExtQuestServiceImpl implements IExtQuestService {
@@ -69,7 +70,15 @@ public class ExtQuestServiceImpl implements IExtQuestService {
 		Map<String, String> attrsMap = new HashMap<>();
 		for(Object attrObj : attrs) {
 			Map<String, Object> attrMap = (Map<String, Object>)attrObj;
-			attrsMap.put((String)attrMap.get("key"), (String)attrMap.get("val"));
+			
+			String key = (String)attrMap.get("key"), val = (String)attrMap.get("val");
+			// ignore quest without answer
+			if("quest_top_reply".equals(key) && StringUtils.isNull(val)) return;
+			
+			// ignore quest with vote < 0
+			if("quest_votes".equals(key) && Integer.parseInt(val) < 0) return;
+			
+			attrsMap.put(key, val);
 		}
 
 		ExtQuest quest = new ExtQuest();
@@ -85,6 +94,7 @@ public class ExtQuestServiceImpl implements IExtQuestService {
 		quest.setAnswerAccept("accepted".equals(attrsMap.get("quest_accepted")) ? 1 : 0);
 		
 		quest.setTags(attrsMap.get("quest_tags"));
+		
 		quest.setVotes(Integer.parseInt(attrsMap.get("quest_votes")));
 		
 		addExtQuest(quest);

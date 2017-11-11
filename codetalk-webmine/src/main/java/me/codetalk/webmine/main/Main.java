@@ -11,8 +11,8 @@ import me.codetalk.webmine.data.WebEntity;
 import me.codetalk.webmine.page.ListPage;
 import me.codetalk.webmine.page.Page;
 import me.codetalk.webmine.page.PageAttr;
-import me.codetalk.webmine.page.impl.HttpClientHtmlListPage;
-import me.codetalk.webmine.page.impl.HttpClientHtmlPage;
+import me.codetalk.webmine.page.impl.JsoupHtmlListPage;
+import me.codetalk.webmine.page.impl.JsoupHtmlPage;
 
 public class Main {
 
@@ -22,10 +22,14 @@ public class Main {
 		
 		/**************************** StackOverflow ****************************/
 		
-//		ListPage listPage = new JsoupHtmlListPage("https://stackoverflow.com/questions/tagged/java?sort=votes&page=15");
-//		
-//		PageAttr attr = new PageAttr("div#questions div.summary h3 a", "href");
-//		List<Page> pages = listPage.fetchPages(attr);
+		ListPage listPage = new JsoupHtmlListPage("https://stackoverflow.com/search?tab=relevance&q=java%20concurrency&page=1");
+		
+		PageAttr attr = new PageAttr("div.search-results div.question-summary div.result-link a", "href");
+		List<Page> pages = listPage.fetchPages(attr);
+		
+		pages.forEach(p -> {
+			LOGGER.info(p.getUrl());
+		});
 		
 //		Map<String, PageAttr> attrMap = new HashMap<>();
 //		attrMap.put("quest_title", new PageAttr("#question-header h1 a", null, 1));
@@ -35,12 +39,10 @@ public class Main {
 //		attrMap.put("quest_accepted", new PageAttr("#answers span.vote-accepted-on",null, 1));
 //		attrMap.put("quest_answer", new PageAttr("#answers div.accepted-answer div.post-text",null, 1));
 //		attrMap.put("quest_top_reply", new PageAttr("#answers div.answer div.post-text",null, 3));
-		
-//		pages.forEach(p -> {
-//			LOGGER.info(p.getUrl());
-//		});
-		
-//		Page page = new HtmlPage("https://stackoverflow.com/questions/40480/is-java-pass-by-reference-or-pass-by-value");
+//		
+//		
+//		
+//		Page page = new JsoupHtmlPage("https://stackoverflow.com/questions/388242/the-definitive-c-book-guide-and-list/388282#388282");
 //		WebEntity entity = page.fetchEntity(attrMap);
 //		LOGGER.info(entity.toString());
 		
@@ -89,14 +91,14 @@ public class Main {
 //		LOGGER.info(entity.toString());
 			
 		/**************************** javacodegeeks ****************************/
-		ListPage listPage = new HttpClientHtmlListPage("https://www.javacodegeeks.com/2015/09/advanced-java.html");
-		
-		PageAttr attr = new PageAttr("article#the-post div.entry h3 a", "href");
-		List<Page> pages = listPage.fetchPages(attr);
-		
-		pages.forEach(p -> {
-			LOGGER.info(p.getUrl());
-		});
+//		ListPage listPage = new HttpClientHtmlListPage("https://www.javacodegeeks.com/2015/09/advanced-java.html");
+//		
+//		PageAttr attr = new PageAttr("article#the-post div.entry h3 a", "href");
+//		List<Page> pages = listPage.fetchPages(attr);
+//		
+//		pages.forEach(p -> {
+//			LOGGER.info(p.getUrl());
+//		});
         
 //		Map<String, PageAttr> attrMap = new HashMap<>();
 //		attrMap.put("article_title", new PageAttr("article#the-post h1.post-title span", null, 2));
