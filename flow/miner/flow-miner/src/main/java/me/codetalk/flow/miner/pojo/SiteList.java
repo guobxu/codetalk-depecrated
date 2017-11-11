@@ -9,6 +9,7 @@ public class SiteList {
 	private Integer entityTypeId;
 	private String url;
 	private Integer type;
+	private Integer priority; // added 11/11, 优先级 - 越小优先级越高
 	private String pagesEl;
 	private String pagesAttr;
 	
@@ -129,6 +130,14 @@ public class SiteList {
 
 	public void setMaxPage(Integer maxPage) {
 		this.maxPage = maxPage;
+	}
+
+	public Integer getPriority() {
+		return priority;
+	}
+
+	public void setPriority(Integer priority) {
+		this.priority = priority;
 	}
 	
 	

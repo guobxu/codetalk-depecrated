@@ -79,24 +79,24 @@ public class Main {
 //		article_tags 		article.post div.page-header ul.categories li
 //		article_content		article.post section.post_content	
 		
-		Map<String, PageAttr> attrMap = new HashMap<>();
-		attrMap.put("article_title", new PageAttr("article.post div.page-header h1.entry-title", null, 2));
-		attrMap.put("article_content", new PageAttr("article.post section.post_content", null, 1));
-		attrMap.put("article_tags", new PageAttr("article.post div.page-header ul.categories li", null, 1));
-		
-		Page page = new HttpClientHtmlPage("http://www.baeldung.com/securing-a-restful-web-service-with-spring-security");
-		WebEntity entity = page.fetchEntity(attrMap);
-		LOGGER.info(entity.toString());
+//		Map<String, PageAttr> attrMap = new HashMap<>();
+//		attrMap.put("article_title", new PageAttr("article.post div.page-header h1.entry-title", null, 2));
+//		attrMap.put("article_content", new PageAttr("article.post section.post_content", null, 1));
+//		attrMap.put("article_tags", new PageAttr("article.post div.page-header ul.categories li", null, 1));
+//		
+//		Page page = new HttpClientHtmlPage("http://www.baeldung.com/securing-a-restful-web-service-with-spring-security");
+//		WebEntity entity = page.fetchEntity(attrMap);
+//		LOGGER.info(entity.toString());
 			
 		/**************************** javacodegeeks ****************************/
-//		ListPage listPage = new HttpClientHtmlListPage("https://www.javacodegeeks.com/page/1/");
-//		
-//		PageAttr attr = new PageAttr("div.post-listing article h2.post-title a", "href");
-//		List<Page> pages = listPage.fetchPages(attr);
-//		
-//		pages.forEach(p -> {
-//			LOGGER.info(p.getUrl());
-//		});
+		ListPage listPage = new HttpClientHtmlListPage("https://www.javacodegeeks.com/2015/09/advanced-java.html");
+		
+		PageAttr attr = new PageAttr("article#the-post div.entry h3 a", "href");
+		List<Page> pages = listPage.fetchPages(attr);
+		
+		pages.forEach(p -> {
+			LOGGER.info(p.getUrl());
+		});
         
 //		Map<String, PageAttr> attrMap = new HashMap<>();
 //		attrMap.put("article_title", new PageAttr("article#the-post h1.post-title span", null, 2));
