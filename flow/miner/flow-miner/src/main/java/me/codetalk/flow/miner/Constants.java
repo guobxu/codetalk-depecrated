@@ -16,7 +16,9 @@ public final class Constants {
 	public static final int LIST_TYPE_HTML_HTTPCLIENT = 3; 	// html - http client
 	public static final int LIST_TYPE_JSON_HTTPCLIENT = 4; 	// json - http client
 	
-	
+	// page type
+	public static final int PAGE_TYPE_HTML = 1;							// page -html
+	public static final int PAGE_TYPE_HTML_HTTPCLIENT = 2;				// page -http client
 	
 	
 	

@@ -6,6 +6,7 @@ public class SitePage {
 
 	private String id;
 	private String url;
+	private Integer type;
 	private Integer status;
 	
 	private String errorMsg;
@@ -78,6 +79,14 @@ public class SitePage {
 
 	public void setEntityTypeId(Integer entityTypeId) {
 		this.entityTypeId = entityTypeId;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
 	}
 	
 	

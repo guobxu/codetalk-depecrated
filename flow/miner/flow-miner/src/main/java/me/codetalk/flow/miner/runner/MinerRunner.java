@@ -2,6 +2,7 @@ package me.codetalk.flow.miner.runner;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import me.codetalk.flow.miner.Constants;
@@ -27,6 +29,7 @@ import me.codetalk.flow.miner.mapper.WebEntityAttrMapper;
 import me.codetalk.flow.miner.mapper.WebEntityMapper;
 import me.codetalk.flow.miner.pojo.SiteEntityAttr;
 import me.codetalk.flow.miner.pojo.SitePage;
+import me.codetalk.flow.miner.pojo.SitePageVO;
 import me.codetalk.flow.miner.pojo.WebEntity;
 import me.codetalk.flow.miner.pojo.WebEntityAttr;
 import me.codetalk.flow.miner.pojo.WebEntityVO;
@@ -35,10 +38,11 @@ import me.codetalk.messaging.kafka.IMessagingService;
 import me.codetalk.webmine.page.ListPage;
 import me.codetalk.webmine.page.Page;
 import me.codetalk.webmine.page.PageAttr;
-import me.codetalk.webmine.page.impl.HtmlPage;
 import me.codetalk.webmine.page.impl.HttpClientHtmlListPage;
+import me.codetalk.webmine.page.impl.HttpClientHtmlPage;
 import me.codetalk.webmine.page.impl.JsonListPage;
 import me.codetalk.webmine.page.impl.JsoupHtmlListPage;
+import me.codetalk.webmine.page.impl.JsoupHtmlPage;
 
 @Component
 public class MinerRunner implements CommandLineRunner {
@@ -66,14 +70,16 @@ public class MinerRunner implements CommandLineRunner {
 	
 	private Random rand = new Random();
 	
-	// sites lock
-//	private Object sitesLock = new Object();
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
 	
 	// site running status
 	private Map<Integer, Boolean> siteStatus = new HashMap<>();
 	
 	// count down
 	private CountDownLatch siteLatch = null;
+	
+	// 处理3天内的错误
+	private static final long ERR_PAGE_WITHIN = 30L * 24 * 60 * 60 * 1000; // 
 	
 	@Override
 	public synchronized void run(String... args) throws Exception {
@@ -220,7 +226,7 @@ public class MinerRunner implements CommandLineRunner {
 				return;
 			}
 			
-			processPages(pages, siteId, list.getSiteName(), list.getEntityTypeId(), list.getEntityType(), list.getEntityAttrs());
+			processPages(pages, siteId, list.getSiteName(), list.getType(), list.getEntityTypeId(), list.getEntityType(), list.getEntityAttrs());
 			
 			if(list.getPageParam() == null) {	// 非分页, 直接返回
 				slmapper.updateListDisabled(list.getId(), "List page finished!");
@@ -249,7 +255,7 @@ public class MinerRunner implements CommandLineRunner {
 		notify();
 	}
 	
-	private void processPages(List<Page> pages, Integer siteId, String siteName, Integer entityTypeId, String entityType, List<SiteEntityAttr> entityAttrs) {
+	private void processPages(List<Page> pages, Integer siteId, String siteName, Integer listType, Integer entityTypeId, String entityType, List<SiteEntityAttr> entityAttrs) {
 		// 3. insert site pages
 		// 3-1. filter 
 		// create mapping: url -> page
@@ -274,6 +280,12 @@ public class MinerRunner implements CommandLineRunner {
 			sp.setSiteId(siteId);
 			sp.setEntityTypeId(entityTypeId);
 			
+			if(listType == Constants.LIST_TYPE_HTML || listType == Constants.LIST_TYPE_JSON) {
+				sp.setType(Constants.PAGE_TYPE_HTML);
+			} else if(listType == Constants.LIST_TYPE_HTML_HTTPCLIENT || listType == Constants.LIST_TYPE_JSON_HTTPCLIENT) {
+				sp.setType(Constants.PAGE_TYPE_HTML_HTTPCLIENT);
+			}
+			
 			sitePages.add(sp);
 		}
 		
@@ -283,11 +295,7 @@ public class MinerRunner implements CommandLineRunner {
 		spmapper.insertPages(sitePages);
 		
 		// 4.1 conver attr map
-		Map<String, PageAttr> attrMap = new HashMap<String, PageAttr>();
-		for(SiteEntityAttr attr : entityAttrs) {
-			PageAttr pageAttr = new PageAttr(attr.getEl(), attr.getName(), attr.getType());
-			attrMap.put(attr.getKey(), pageAttr);
-		}
+		Map<String, PageAttr> attrMap = convertToAttrMap(entityAttrs);
 		
 		for(SitePage sp : sitePages) {
 			String pageUrl = sp.getUrl();
@@ -307,42 +315,11 @@ public class MinerRunner implements CommandLineRunner {
 				// reset sleep millis
 				setSiteSleep(siteId, sleepInit);
 				
-				// 4.2 convert & insert web entity
-				WebEntity entity = new WebEntity();
-				entity.setEntityTypeId(entityTypeId);
-				entity.setPageUrl(pageUrl);
-				entity.setSiteId(siteId);
+				processWebEntity(we, siteId, siteName, entityTypeId, entityType);
 				
-				wemapper.insertEntity(entity);
-				
-				List<WebEntityAttr> attrs = new ArrayList<WebEntityAttr>();
-				we.getAttrs().forEach((k, v) -> {
-					WebEntityAttr attr = new WebEntityAttr();
-					attr.setKey(k);
-					attr.setVal(v);
-					attr.setEntityId(entity.getId());
-					
-					attrs.add(attr);
-				});
-				
-				weamapper.insertAttrList(attrs);
-				
-				// 4.2 update page status
+				// 4.3 update page status
 				sp.setStatus(Constants.PAGE_STATUS_FETCHED);
 				spmapper.updatePageStatus(sp);
-				
-				// 4.3 send message to kafka
-				WebEntityVO entityVO = new WebEntityVO();
-				entityVO.setAttrs(attrs);
-				entityVO.setId(entity.getId());
-				entityVO.setEntityType(entityType);
-				entityVO.setEntityTypeId(entityTypeId);
-				entityVO.setPageUrl(pageUrl);
-				entityVO.setSite(siteName);
-				entityVO.setSiteId(siteId);
-				entityVO.setCreateDate(new Timestamp(System.currentTimeMillis()));
-				
-				messagingService.sendMessage(getTopic(entityVO), entityVO);
 			} catch(Exception ex) {
 				LOGGER.error(ex.getMessage(), ex);
 				LOGGER.error("===============> Error process page, skip url: " + pageUrl);
@@ -362,6 +339,104 @@ public class MinerRunner implements CommandLineRunner {
 						LOGGER.error(iex.getMessage(), iex);
 					}
 				}
+			}
+			
+		}
+	}
+	
+	private void processWebEntity(me.codetalk.webmine.data.WebEntity we, Integer siteId, String siteName, Integer entityTypeId, String entityType) {
+		// 4.2 convert & insert web entity
+		WebEntity entity = new WebEntity();
+		entity.setEntityTypeId(entityTypeId);
+		entity.setPageUrl(we.getUrl());
+		entity.setSiteId(siteId);
+		
+		wemapper.insertEntity(entity);
+		
+		List<WebEntityAttr> attrs = new ArrayList<WebEntityAttr>();
+		we.getAttrs().forEach((k, v) -> {
+			WebEntityAttr attr = new WebEntityAttr();
+			attr.setKey(k);
+			attr.setVal(v);
+			attr.setEntityId(entity.getId());
+			
+			attrs.add(attr);
+		});
+		
+		weamapper.insertAttrList(attrs);
+		
+		// 4.2 send message to kafka
+		WebEntityVO entityVO = new WebEntityVO();
+		entityVO.setAttrs(attrs);
+		entityVO.setId(entity.getId());
+		entityVO.setEntityType(entityType);
+		entityVO.setEntityTypeId(entityTypeId);
+		entityVO.setPageUrl(we.getUrl());
+		entityVO.setSite(siteName);
+		entityVO.setSiteId(siteId);
+		entityVO.setCreateDate(new Timestamp(System.currentTimeMillis()));
+		
+		messagingService.sendMessage(getTopic(entityVO), entityVO);
+	}
+	
+	private Map<String, PageAttr> convertToAttrMap(List<SiteEntityAttr> entityAttrs) {
+		// 4.1 conver attr map
+		Map<String, PageAttr> attrMap = new HashMap<String, PageAttr>();
+		for(SiteEntityAttr attr : entityAttrs) {
+			PageAttr pageAttr = new PageAttr(attr.getEl(), attr.getName(), attr.getType());
+			attrMap.put(attr.getKey(), pageAttr);
+		}
+		
+		return attrMap;
+	}
+	
+	// 每隔15分钟执行一次
+	@Scheduled(fixedDelay = 1 * 60 * 60 * 1000)
+	public void processErrPages() {
+		Timestamp tsAfter = new Timestamp( System.currentTimeMillis() - ERR_PAGE_WITHIN );
+		
+		LOGGER.info("===============================> In processErrPages, after = " + sdf.format(tsAfter));
+		
+		List<SitePageVO> errPages = spmapper.selectErrPagesAfter(tsAfter);
+		
+		LOGGER.info("===============================> Found err pages, size = " + errPages.size());
+		
+		for(SitePageVO sp : errPages) {
+			String pageUrl = sp.getUrl();
+			LOGGER.info("===============> Start to process page url: " + pageUrl);
+			
+			Page page = null;
+			if(sp.getType() == Constants.PAGE_TYPE_HTML) {
+				page = new JsoupHtmlPage(pageUrl);
+			} else if(sp.getType() == Constants.PAGE_TYPE_HTML_HTTPCLIENT) {
+				page = new HttpClientHtmlPage(pageUrl);
+			} else {
+				LOGGER.error("===============> Err page type, return.");
+				continue;
+			}
+			
+			Map<String, PageAttr> attrMap = convertToAttrMap(sp.getEntityAttrs());
+			try {
+				me.codetalk.webmine.data.WebEntity we = page.fetchEntity(attrMap);
+				
+				// sleep a while
+				try {
+					Thread.sleep(rand.nextInt(20) * 1000);
+				} catch(InterruptedException iex) {
+					LOGGER.error(iex.getMessage(), iex);
+				}
+				
+				processWebEntity(we, sp.getSiteId(), sp.getSiteName(), sp.getEntityTypeId(), sp.getEntityType());
+				
+				sp.setStatus(Constants.PAGE_STATUS_FETCHED);
+				spmapper.updatePageStatus(sp);
+			} catch(Exception ex) {
+				LOGGER.error(ex.getMessage(), ex);
+				LOGGER.error("===============> Error process page, skip url: " + pageUrl);
+				
+				sp.setStatus(Constants.PAGE_STATUS_ERR);
+				sp.setErrorMsg(ex.getMessage());
+				spmapper.updatePageStatus(sp);
 			}
 			
 		}
