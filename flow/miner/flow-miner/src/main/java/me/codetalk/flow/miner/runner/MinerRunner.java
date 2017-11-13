@@ -79,7 +79,7 @@ public class MinerRunner implements CommandLineRunner {
 	private CountDownLatch siteLatch = null;
 	
 	// 处理3天内的错误
-	private static final long ERR_PAGE_WITHIN = 30L * 24 * 60 * 60 * 1000; // 
+	private static final long ERR_PAGE_WITHIN = 3L * 24 * 60 * 60 * 1000; // 
 	
 	@Override
 	public synchronized void run(String... args) throws Exception {
@@ -421,7 +421,7 @@ public class MinerRunner implements CommandLineRunner {
 				
 				// sleep a while
 				try {
-					Thread.sleep(rand.nextInt(20) * 1000);
+					Thread.sleep(rand.nextInt(30) * 1000);
 				} catch(InterruptedException iex) {
 					LOGGER.error(iex.getMessage(), iex);
 				}
