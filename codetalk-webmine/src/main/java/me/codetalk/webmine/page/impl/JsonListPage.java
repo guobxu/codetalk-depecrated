@@ -14,7 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import me.codetalk.webmine.page.Page;
 import me.codetalk.webmine.page.PageAttr;
-import me.codetalk.webmine.util.Utils;
+import me.codetalk.webmine.util.StringUtils;
 
 /**
  * JSON格式列表页面
@@ -51,7 +51,7 @@ public class JsonListPage extends AbstractListPage {
 			}
 			
 			if(jsonArr != null) {
-				String[] siteRes = Utils.extractUrl(url);
+				String[] siteRes = StringUtils.extractUrl(url);
 				
 				jsonArr.forEach( obj -> {
 					JSONObject jobj = (JSONObject)obj;

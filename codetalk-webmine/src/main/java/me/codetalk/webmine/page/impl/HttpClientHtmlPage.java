@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.jsoup.nodes.Document;
 
-import me.codetalk.webmine.util.Utils;
+import me.codetalk.webmine.util.HttpClientUtils;
 
 public class HttpClientHtmlPage extends HtmlPage {
 
@@ -14,7 +14,7 @@ public class HttpClientHtmlPage extends HtmlPage {
 
 	@Override
 	protected Document getDocument() throws IOException {
-		return Utils.getDocument(url);
+		return HttpClientUtils.getDocument(url);
 	}
 
 }

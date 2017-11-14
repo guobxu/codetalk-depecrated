@@ -45,9 +45,9 @@ public class ArticleServiceImpl implements IArticleService {
 	public void createArticle(Article article) {
 		LOGGER.info("=======================> Create article, uuid=" + article.getUuid());
 		
-		String uuid = article.getUuid();
-		if(articleMapper.selectOne(uuid) != null) {
-			LOGGER.info("Article with [uuid = " + uuid + "] already exists!");
+		String url = article.getUrl();
+		if(articleMapper.selectOneByUrl(url) != null) {
+			LOGGER.info("Article with [url = " + url + "] already exists!");
 			
 			return;
 		}
@@ -123,10 +123,8 @@ public class ArticleServiceImpl implements IArticleService {
 		article.setSite((String)data.get("site"));
 		article.setTitle(attrsMap.get("article_title"));
 		
-		String summary = attrsMap.get("article_summary");
-		article.setSummary(summary.length() > 300 ? summary.substring(0, 300) : summary);
-		
 		String articleContent = attrsMap.get("article_content");
+		articleContent = articleContent.replaceAll("’", "'");
 		Document doc = Jsoup.parse(articleContent);
 		articleContent = removeHtmlEls(doc, new String[]{
 				"div.e3lan-post",
@@ -136,8 +134,13 @@ public class ArticleServiceImpl implements IArticleService {
 		});
 		articleContent = articleContent.replaceAll("style=\".*?\"", "");
 		articleContent = articleContent.replaceAll("class=\".*?\"", "");
-		articleContent = articleContent.replaceAll("’", "'");
 		article.setContent(articleContent);
+		
+		// extractTextSummary
+		int summLen = 300;
+		String summary = attrsMap.get("article_summary");
+		article.setSummary( summary == null ? extractTextSummary(doc, "body", summLen) 
+				: ( summary.length() > summLen ? summary.substring(0, summLen) : summary ) );
 		
 		String tagstr = StringUtils.toString(attrsMap.get("article_tags"), true).trim();
 		if(StringUtils.isNull(tagstr)) {
@@ -222,6 +225,14 @@ public class ArticleServiceImpl implements IArticleService {
 		}
 		
 		return doc.select("body").html();
+	}
+	
+	private String extractTextSummary(Document doc, String el, int len) {
+		Elements els = doc.select(el);
+		if(els.isEmpty()) return null;
+		
+		String text = els.text();
+		return text.length() > len ? text.substring(0, len) : text;
 	}
 	
 	private Map<String, String> attrsToMap(List attrs) {

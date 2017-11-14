@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.jsoup.nodes.Document;
 
-import me.codetalk.webmine.util.Utils;
+import me.codetalk.webmine.util.HttpClientUtils;
 
 /**
  * 基于HTTP client实现
@@ -20,7 +20,7 @@ public class HttpClientHtmlListPage extends HtmlListPage {
 	
 	@Override
 	protected Document getDocument(String url) throws IOException {
-		return Utils.getDocument(url);
+		return HttpClientUtils.getDocument(url);
 	}
 	
 	@Override

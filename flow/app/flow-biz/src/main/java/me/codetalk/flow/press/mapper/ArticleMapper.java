@@ -8,6 +8,8 @@ public interface ArticleMapper {
 
 	public void insertArticle(Article article);
 	
-	public Integer selectOne(@Param("uuid") String uuid);
+	public Integer selectOneByUuid(@Param("uuid") String uuid);
+	
+	public Integer selectOneByUrl(@Param("url") String url);
 	
 }

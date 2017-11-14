@@ -11,7 +11,7 @@ import org.jsoup.select.Elements;
 import me.codetalk.webmine.Constants;
 import me.codetalk.webmine.data.WebEntity;
 import me.codetalk.webmine.page.PageAttr;
-import me.codetalk.webmine.util.Utils;
+import me.codetalk.webmine.util.StringUtils;
 
 public abstract class HtmlPage extends AbstractPage {
 
@@ -26,7 +26,7 @@ public abstract class HtmlPage extends AbstractPage {
 		WebEntity entity = new WebEntity();
 		entity.setUrl(url);
 		
-		String[] siteAndRes = Utils.extractUrl(url);
+		String[] siteAndRes = StringUtils.extractUrl(url);
 		entity.setSite(siteAndRes[0]);
 		entity.setResource(siteAndRes[1]);
 		

@@ -305,6 +305,8 @@ public class MinerRunner implements CommandLineRunner {
 			try {
 				me.codetalk.webmine.data.WebEntity we = page.fetchEntity(attrMap);
 				
+				LOGGER.info("===============> Fetch page successfully!");
+				
 				// sleep a while
 				try {
 					Thread.sleep(rand.nextInt(45) * 1000);
@@ -312,8 +314,12 @@ public class MinerRunner implements CommandLineRunner {
 					LOGGER.error(iex.getMessage(), iex);
 				}
 				
+				LOGGER.info("===============> End of sleep!");
+				
 				// reset sleep millis
 				setSiteSleep(siteId, sleepInit);
+				
+				LOGGER.info("===============> Begin to process web entity!");
 				
 				processWebEntity(we, siteId, siteName, entityTypeId, entityType);
 				

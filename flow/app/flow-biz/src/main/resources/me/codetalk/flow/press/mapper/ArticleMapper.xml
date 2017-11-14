@@ -29,8 +29,12 @@
 		)
 	</insert>
 	
-	<select id="selectOne" parameterType="String" resultType="Integer">
+	<select id="selectOneByUuid" parameterType="String" resultType="Integer">
 		select 1 from prs_articles where article_uuid = #{uuid}
+	</select>
+	
+	<select id="selectOneByUrl" parameterType="String" resultType="Integer">
+		select 1 from prs_articles where article_url = #{url}
 	</select>
 	
 </mapper>
