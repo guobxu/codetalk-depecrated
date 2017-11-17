@@ -43,6 +43,12 @@ public class ArticleServiceImpl implements IArticleService {
 	@Override
 	@Transactional
 	public void createArticle(Article article) {
+		createArticle(article, true);
+	}
+	
+	@Override
+	@Transactional
+	public void createArticle(Article article, boolean doIndex) {
 		LOGGER.info("=======================> Create article, uuid=" + article.getUuid());
 		
 		String url = article.getUrl();
@@ -55,7 +61,7 @@ public class ArticleServiceImpl implements IArticleService {
 		article.setIndexed(Constants.CONST_YES);
 		articleMapper.insertArticle(article);
 
-		articleRepo.save(article2Doc(article));
+		if(doIndex) articleRepo.save(article2Doc(article));
 	}
 	
 
@@ -193,6 +199,60 @@ public class ArticleServiceImpl implements IArticleService {
 		}
 		
 		if(summary != null) article.setSummary(summary);
+		
+		// tags
+		String tagstr = StringUtils.toString(attrsMap.get("article_tags"), true).trim();
+		if(StringUtils.isNull(tagstr)) {
+			article.setTags("");
+		} else {
+			article.setTags(extractCommonArticleTag(tagstr));
+		}
+		
+		createArticle(article);
+	}
+	
+	@KafkaListener(topics = "webminer-mkyong-article", groupId = "flow-article-mkyong-article-migrate")
+	public void mkyArticleMigrate(String msgstr) {
+		LOGGER.info("In mkyArticleMigrate...Receive mesg data = " + msgstr);
+		
+		Message mesg = (Message)JsonUtils.fromJson(msgstr, Message.class);
+		Map<String, Object> data = (Map<String, Object>)mesg.getData();
+		
+		// attr list -> map
+		List attrs = (List)data.get("attrs");
+		Map<String, String> attrsMap = new HashMap<>();
+		for(Object attrObj : attrs) {
+			Map<String, Object> attrMap = (Map<String, Object>)attrObj;
+			
+			String key = (String)attrMap.get("key"), val = (String)attrMap.get("val");
+			if("article_content".equals(key) && StringUtils.isNull(val)) return;
+			
+			attrsMap.put(key, val);
+		}
+		
+		Article article = new Article();
+		article.setUuid(mesg.getKey());
+		article.setUrl((String)data.get("pageUrl"));
+		article.setSite((String)data.get("site"));
+		article.setTitle(attrsMap.get("article_title"));
+		
+		String articleContent = attrsMap.get("article_content");
+		Document doc = Jsoup.parse(articleContent);
+		articleContent = removeHtmlEls(doc, new String[]{
+				"div.ads-in-post",
+				"ins.adsbygoogle",
+				"script",
+		});
+		articleContent = articleContent.replaceAll("(<.*?)style=\".*?\"(.*?>)", "$1$2");
+		articleContent = articleContent.replaceAll("(<.*?)class=\".*?\"(.*?>)", "$1$2");
+//		articleContent = articleContent.replaceAll("’", "'");
+		article.setContent(articleContent);
+		
+		// extractTextSummary
+		int summLen = 300;
+		String summary = attrsMap.get("article_summary");
+		article.setSummary( summary == null ? extractTextSummary(doc, "body", summLen) 
+				: ( summary.length() > summLen ? summary.substring(0, summLen) : summary ) );
 		
 		// tags
 		String tagstr = StringUtils.toString(attrsMap.get("article_tags"), true).trim();

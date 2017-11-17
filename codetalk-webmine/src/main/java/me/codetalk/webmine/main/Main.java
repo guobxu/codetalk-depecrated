@@ -1,14 +1,17 @@
 package me.codetalk.webmine.main;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import me.codetalk.webmine.data.WebEntity;
+import me.codetalk.webmine.page.ListPage;
 import me.codetalk.webmine.page.Page;
 import me.codetalk.webmine.page.PageAttr;
+import me.codetalk.webmine.page.impl.HttpClientHtmlListPage;
 import me.codetalk.webmine.page.impl.HttpClientHtmlPage;
 
 public class Main {
@@ -97,15 +100,39 @@ public class Main {
 //			LOGGER.info(p.getUrl());
 //		});
         
-		Map<String, PageAttr> attrMap = new HashMap<>();
-		attrMap.put("article_title", new PageAttr("article#the-post h1.post-title span", null, 2));
-		attrMap.put("article_summary", new PageAttr("article#the-post div.entry > p", null, 3));
-		attrMap.put("article_content", new PageAttr("article#the-post div.entry", null, 1));
-		attrMap.put("article_tags", new PageAttr("div#main-content div.content p.post-tag a", null, 2));
+//		Map<String, PageAttr> attrMap = new HashMap<>();
+//		attrMap.put("article_title", new PageAttr("article#the-post h1.post-title span", null, 2));
+//		attrMap.put("article_summary", new PageAttr("article#the-post div.entry > p", null, 3));
+//		attrMap.put("article_content", new PageAttr("article#the-post div.entry", null, 1));
+//		attrMap.put("article_tags", new PageAttr("div#main-content div.content p.post-tag a", null, 2));
+//		
+//		Page page = new HttpClientHtmlPage("https://www.javacodegeeks.com/2017/11/dockerized-java-ee-8-applications-glassfish-5-0.html");
+//		WebEntity entity = page.fetchEntity(attrMap);
+//		LOGGER.info(entity.toString());
 		
-		Page page = new HttpClientHtmlPage("https://www.javacodegeeks.com/2017/11/dockerized-java-ee-8-applications-glassfish-5-0.html");
-		WebEntity entity = page.fetchEntity(attrMap);
-		LOGGER.info(entity.toString());
+		/**************************** mkyong ****************************/
+//		ListPage listPage = new HttpClientHtmlListPage("http://www.mkyong.com/tutorials/spring-tutorials/");
+//		
+//		PageAttr attr = new PageAttr("article div.post-content > ul li a", "href");
+//		List<Page> pages = listPage.fetchPages(attr);
+//		
+//		pages.forEach(p -> {
+//			LOGGER.info(p.getUrl());
+//		});
+		
+//		Map<String, PageAttr> attrMap = new HashMap<>();
+//		attrMap.put("article_title", new PageAttr("div#post-container article h1", null, 4));
+//		attrMap.put("article_summary", new PageAttr("div#post-container article div.post-content > p", null, 3));
+//		attrMap.put("article_content", new PageAttr("div#post-container article div.post-content ", null, 1));
+//		attrMap.put("article_tags", new PageAttr("div#post-container article span.post-tag", null, 1));
+//		
+//		Page page = new HttpClientHtmlPage("http://www.mkyong.com/spring-boot/spring-boot-hello-world-example-thymeleaf/");
+//		WebEntity entity = page.fetchEntity(attrMap);
+//		LOGGER.info(entity.toString());
+		
+		String s = "<code style=\"language-java\">&lt;div style=\"navbar-header\"&gt;</code>";
+		s = s.replaceAll("(<.*?)style=\".*?\"(.*?>)", "$1$2");
+		System.out.println(s);
 		
 	}
 	
