@@ -1,17 +1,15 @@
 package me.codetalk.webmine.main;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import me.codetalk.webmine.data.WebEntity;
-import me.codetalk.webmine.page.ListPage;
 import me.codetalk.webmine.page.Page;
 import me.codetalk.webmine.page.PageAttr;
-import me.codetalk.webmine.page.impl.HttpClientHtmlListPage;
 import me.codetalk.webmine.page.impl.HttpClientHtmlPage;
 
 public class Main {
@@ -130,9 +128,24 @@ public class Main {
 //		WebEntity entity = page.fetchEntity(attrMap);
 //		LOGGER.info(entity.toString());
 		
-		String s = "<code style=\"language-java\">&lt;div style=\"navbar-header\"&gt;</code>";
-		s = s.replaceAll("(<.*?)style=\".*?\"(.*?>)", "$1$2");
-		System.out.println(s);
+//		String s = "<code style=\"language-java\">&lt;div style=\"navbar-header\"&gt;</code>";
+//		s = s.replaceAll("(<.*?)style=\".*?\"(.*?>)", "$1$2");
+//		System.out.println(s);
+		
+		/**************************** infoq ****************************/
+//		Map<String, PageAttr> attrMap = new HashMap<>();
+//		attrMap.put("article_title", new PageAttr("div#site div#content h1.general", null, 3));
+//		attrMap.put("article_summary", new PageAttr("div#site div#content div.text_info > p", null, 3));
+//		attrMap.put("article_content", new PageAttr("div#site div#content div.text_info", null, 1));
+//		attrMap.put("article_tags", new PageAttr("div#site div#content div.text_info div.related ul li a.followable", null, 1));
+//		
+//		Page page = new HttpClientHtmlPage("https://www.infoq.com/news/2012/12/netflix-hystrix-fault-tolerance/");
+//		WebEntity entity = page.fetchEntity(attrMap);
+//		LOGGER.info(entity.toString());
+		
+		for(int i = 0; i < 10; i++) {
+			System.out.println(UUID.randomUUID().toString());
+		}
 		
 	}
 	

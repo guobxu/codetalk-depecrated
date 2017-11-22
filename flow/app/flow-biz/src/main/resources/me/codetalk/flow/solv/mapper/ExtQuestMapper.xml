@@ -35,8 +35,12 @@
 		update sv_ext_quests set quest_indexed = 1 where ext_quest_id = #{id}
 	</update>
 	
-	<select id="selectOne" parameterType="String" resultType="Integer">
+	<select id="selectOneByUuid" parameterType="String" resultType="Integer">
 		select 1 from sv_ext_quests where quest_uuid = #{uuid}
+	</select>
+	
+	<select id="selectOneByUrl" parameterType="String" resultType="Integer">
+		select 1 from sv_ext_quests where quest_url = #{url}
 	</select>
 	
 </mapper>

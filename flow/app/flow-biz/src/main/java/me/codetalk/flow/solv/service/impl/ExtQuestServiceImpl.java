@@ -38,9 +38,10 @@ public class ExtQuestServiceImpl implements IExtQuestService {
 	public void addExtQuest(ExtQuest quest) {
 		LOGGER.info("Add ext quest, uuid=" + quest.getUuid());
 		
-		String quid = quest.getUuid();
-		if(eqmapper.selectOne(quid) != null) {
-			LOGGER.info("Ext quest with [uuid = " + quid + "] already exists!");
+//		String quid = quest.getUuid();
+		String url = quest.getUrl();
+		if(eqmapper.selectOneByUrl(url) != null) {
+			LOGGER.info("Ext quest with [url = " + url + "] already exists!");
 			
 			return;
 		}

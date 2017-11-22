@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -265,6 +266,44 @@ public class ArticleServiceImpl implements IArticleService {
 		createArticle(article);
 	}
 	
+	@KafkaListener(topics = "webminer-infoq-article", groupId = "flow-article-infoq-article-migrate")
+	public void infoqArticleMigrate(String msgstr) {
+		LOGGER.info("In infoqArticleMigrate...Receive mesg data = " + msgstr);
+		
+		Message mesg = (Message)JsonUtils.fromJson(msgstr, Message.class);
+		Map<String, Object> data = (Map<String, Object>)mesg.getData();
+		
+		// attr list -> map
+		Map<String, String> attrsMap = attrsToMap((List)data.get("attrs"));
+		
+		Article article = new Article();
+		article.setUuid(mesg.getKey());
+		article.setUrl((String)data.get("pageUrl"));
+		article.setSite((String)data.get("site"));
+		article.setTitle(attrsMap.get("article_title"));
+		
+		String articleContent = attrsMap.get("article_content");
+		Document doc = Jsoup.parse(articleContent);
+		articleContent = removeElAndAfter(doc, "div.clear");
+		articleContent = articleContent.replaceAll("(<.*?)style=\".*?\"(.*?>)", "$1$2");
+		articleContent = articleContent.replaceAll("(<.*?)class=\".*?\"(.*?>)", "$1$2");
+//		articleContent = articleContent.replaceAll("’", "'");
+		article.setContent(articleContent);
+		
+		String summary = attrsMap.get("article_summary");
+		article.setSummary( summary == null ? null : ( summary.length() > 300 ? summary.substring(0, 300) : summary ) );
+		
+		// tags
+		String tagstr = StringUtils.toString(attrsMap.get("article_tags"), true).trim();
+		if(StringUtils.isNull(tagstr)) {
+			article.setTags("");
+		} else {
+			article.setTags(extractInfoqArticleTag(tagstr));
+		}
+		
+		createArticle(article);
+	}
+	
 	private String extractCommonArticleTag(String rawstr) {
 		Pattern ptrn = Pattern.compile("<a .*?>(.*?)</a>");
 		Matcher m = ptrn.matcher(rawstr);
@@ -277,11 +316,41 @@ public class ArticleServiceImpl implements IArticleService {
 		
 		return tagbuf.toString();
 	}
+
+	private String extractInfoqArticleTag(String rawstr) {
+		Pattern ptrn = Pattern.compile("<.*?>(.*?)</.*?>");
+		Matcher m = ptrn.matcher(rawstr);
+		
+		StringBuffer tagbuf = new StringBuffer();
+		while(m.find()) {
+			String tag = m.group(1).trim().replaceAll(" +&amp; +", "&");
+			tag = tag.replaceAll(" +", "-");
+			tagbuf.append(tagbuf.length() > 0 ? " " + tag : tag);
+		}
+		
+		return tagbuf.toString();
+	}
 	
 	private String removeHtmlEls(Document doc, String[] els) {
 		for(String el : els) {
 			Elements elements = doc.select(el);
 			elements.remove();
+		}
+		
+		return doc.select("body").html();
+	}
+	
+	// 删除elStr节点, 以及后面的sibling节点
+	private String removeElAndAfter(Document doc, String elStr) {
+		Element el = doc.select(elStr).first();
+		
+		if(el != null) {
+			Node sibling = null;
+			while( (sibling = el.nextSibling()) != null ) {
+				sibling.remove();
+			}
+			
+			el.remove();
 		}
 		
 		return doc.select("body").html();

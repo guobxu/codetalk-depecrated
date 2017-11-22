@@ -10,6 +10,8 @@ public interface ExtQuestMapper {
 	
 	public void updateExtQuestIndexed(@Param("id") String id);
 	
-	public Integer selectOne(@Param("uuid") String uuid);
+	public Integer selectOneByUuid(@Param("uuid") String uuid);
+	
+	public Integer selectOneByUrl(@Param("url") String url);
 	
 }
