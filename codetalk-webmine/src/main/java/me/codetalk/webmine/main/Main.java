@@ -143,9 +143,20 @@ public class Main {
 //		WebEntity entity = page.fetchEntity(attrMap);
 //		LOGGER.info(entity.toString());
 		
-		for(int i = 0; i < 10; i++) {
-			System.out.println(UUID.randomUUID().toString());
-		}
+		/**************************** thenewstack ****************************/
+		Map<String, PageAttr> attrMap = new HashMap<>();
+		attrMap.put("article_title", new PageAttr("#main article header.entry-header h1", null, 3));
+		attrMap.put("article_summary", new PageAttr("#main article div.entry-content div.post-content > p", null, 3));
+		attrMap.put("article_content", new PageAttr("#main article div.entry-content div.post-content", null, 1));
+		attrMap.put("article_tags", new PageAttr("#main article footer.entry-footer div.newtags", null, 1));
+		
+		Page page = new HttpClientHtmlPage("https://thenewstack.io/grpc-lean-mean-communication-protocol-microservices/");
+		WebEntity entity = page.fetchEntity(attrMap);
+		LOGGER.info(entity.toString());
+		
+//		for(int i = 0; i < 10; i++) {
+//			System.out.println(UUID.randomUUID().toString());
+//		}
 		
 	}
 	

@@ -304,13 +304,55 @@ public class ArticleServiceImpl implements IArticleService {
 		createArticle(article);
 	}
 	
+	@KafkaListener(topics = "webminer-thenewstack-article", groupId = "flow-article-thenewstack-article-migrate")
+	public void tnsArticleMigrate(String msgstr) {
+		LOGGER.info("In tnsArticleMigrate...Receive mesg data = " + msgstr);
+		
+		Message mesg = (Message)JsonUtils.fromJson(msgstr, Message.class);
+		Map<String, Object> data = (Map<String, Object>)mesg.getData();
+		
+		// attr list -> map
+		Map<String, String> attrsMap = attrsToMap((List)data.get("attrs"));
+		
+		Article article = new Article();
+		article.setUuid(mesg.getKey());
+		article.setUrl((String)data.get("pageUrl"));
+		article.setSite((String)data.get("site"));
+		String title = attrsMap.get("article_title");
+		article.setTitle( title == null ? "" : title.replaceAll("’", "'") );
+		
+		String articleContent = attrsMap.get("article_content");
+		Document doc = Jsoup.parse(articleContent);
+		articleContent = removeHtmlEls(doc, new String[]{
+				"p.attribution",
+		});
+		articleContent = articleContent.replaceAll("(<.*?)style=\".*?\"(.*?>)", "$1$2");
+		articleContent = articleContent.replaceAll("(<.*?)class=\".*?\"(.*?>)", "$1$2");
+		articleContent = articleContent.replaceAll("’", "'");
+		article.setContent(articleContent);
+		
+		String summary = attrsMap.get("article_summary");
+		article.setSummary( summary == null ? null : ( summary.length() > 300 ? summary.substring(0, 300) : summary ) );
+		
+		// tags
+		String tagstr = StringUtils.toString(attrsMap.get("article_tags"), true).trim();
+		if(StringUtils.isNull(tagstr)) {
+			article.setTags("");
+		} else {
+			article.setTags(extractCommonArticleTag(tagstr));
+		}
+		
+		createArticle(article);
+	}
+	
 	private String extractCommonArticleTag(String rawstr) {
 		Pattern ptrn = Pattern.compile("<a .*?>(.*?)</a>");
 		Matcher m = ptrn.matcher(rawstr);
 		
 		StringBuffer tagbuf = new StringBuffer();
 		while(m.find()) {
-			String tag = m.group(1).trim().replaceAll(" +", "-");
+			String tag = m.group(1).trim().replaceAll(" *&amp; *", "&");
+			tag = tag.replaceAll(" +", "-");
 			tagbuf.append(tagbuf.length() > 0 ? " " + tag : tag);
 		}
 		
@@ -323,7 +365,7 @@ public class ArticleServiceImpl implements IArticleService {
 		
 		StringBuffer tagbuf = new StringBuffer();
 		while(m.find()) {
-			String tag = m.group(1).trim().replaceAll(" +&amp; +", "&");
+			String tag = m.group(1).trim().replaceAll(" *&amp; *", "&");
 			tag = tag.replaceAll(" +", "-");
 			tagbuf.append(tagbuf.length() > 0 ? " " + tag : tag);
 		}
