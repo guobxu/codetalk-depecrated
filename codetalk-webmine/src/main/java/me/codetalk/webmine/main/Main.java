@@ -1,16 +1,15 @@
 package me.codetalk.webmine.main;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import me.codetalk.webmine.data.WebEntity;
+import me.codetalk.webmine.page.ListPage;
 import me.codetalk.webmine.page.Page;
 import me.codetalk.webmine.page.PageAttr;
-import me.codetalk.webmine.page.impl.HttpClientHtmlPage;
+import me.codetalk.webmine.page.impl.HttpClientHtmlListPage;
 
 public class Main {
 
@@ -144,15 +143,35 @@ public class Main {
 //		LOGGER.info(entity.toString());
 		
 		/**************************** thenewstack ****************************/
-		Map<String, PageAttr> attrMap = new HashMap<>();
-		attrMap.put("article_title", new PageAttr("#main article header.entry-header h1", null, 3));
-		attrMap.put("article_summary", new PageAttr("#main article div.entry-content div.post-content > p", null, 3));
-		attrMap.put("article_content", new PageAttr("#main article div.entry-content div.post-content", null, 1));
-		attrMap.put("article_tags", new PageAttr("#main article footer.entry-footer div.newtags", null, 1));
+//		Map<String, PageAttr> attrMap = new HashMap<>();
+//		attrMap.put("article_title", new PageAttr("#main article header.entry-header h1", null, 3));
+//		attrMap.put("article_summary", new PageAttr("#main article div.entry-content div.post-content > p", null, 3));
+//		attrMap.put("article_content", new PageAttr("#main article div.entry-content div.post-content", null, 1));
+//		attrMap.put("article_tags", new PageAttr("#main article footer.entry-footer div.newtags", null, 1));
+//		
+//		Page page = new HttpClientHtmlPage("https://thenewstack.io/grpc-lean-mean-communication-protocol-microservices/");
+//		WebEntity entity = page.fetchEntity(attrMap);
+//		LOGGER.info(entity.toString());
 		
-		Page page = new HttpClientHtmlPage("https://thenewstack.io/grpc-lean-mean-communication-protocol-microservices/");
-		WebEntity entity = page.fetchEntity(attrMap);
-		LOGGER.info(entity.toString());
+		/**************************** jvns ****************************/
+//		Map<String, PageAttr> attrMap = new HashMap<>();
+//		attrMap.put("article_title", new PageAttr("#main article header h1.entry-title", null, 3));
+//		attrMap.put("article_summary", new PageAttr("#main article div.entry-content > p", null, 3));
+//		attrMap.put("article_content", new PageAttr("#main article div.entry-content", null, 1));
+//		attrMap.put("article_tags", new PageAttr("#main article header div.post-tags", null, 1));
+//		
+//		Page page = new HttpClientHtmlPage("https://jvns.ca/blog/2016/11/21/things-to-learn-about-linux/");
+//		WebEntity entity = page.fetchEntity(attrMap);
+//		LOGGER.info(entity.toString());
+		
+		ListPage listPage = new HttpClientHtmlListPage("https://jvns.ca/");
+		
+		PageAttr attr = new PageAttr("div#main div#blog-archives table td a", "href");
+		List<Page> pages = listPage.fetchPages(attr);
+		
+		pages.forEach(p -> {
+			LOGGER.info("insert into site_pages values ('" + UUID.randomUUID().toString() + "', '" + p.getUrl() + "', 2, 3, 8, 801, null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);");
+		});
 		
 //		for(int i = 0; i < 10; i++) {
 //			System.out.println(UUID.randomUUID().toString());
