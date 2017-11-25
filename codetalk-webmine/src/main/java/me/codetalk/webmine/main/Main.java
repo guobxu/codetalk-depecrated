@@ -1,15 +1,15 @@
 package me.codetalk.webmine.main;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import me.codetalk.webmine.page.ListPage;
+import me.codetalk.webmine.data.WebEntity;
 import me.codetalk.webmine.page.Page;
 import me.codetalk.webmine.page.PageAttr;
-import me.codetalk.webmine.page.impl.HttpClientHtmlListPage;
+import me.codetalk.webmine.page.impl.HttpClientHtmlPage;
 
 public class Main {
 
@@ -164,14 +164,24 @@ public class Main {
 //		WebEntity entity = page.fetchEntity(attrMap);
 //		LOGGER.info(entity.toString());
 		
-		ListPage listPage = new HttpClientHtmlListPage("https://jvns.ca/");
+//		ListPage listPage = new HttpClientHtmlListPage("https://jvns.ca/");
+//		
+//		PageAttr attr = new PageAttr("div#main div#blog-archives table td a", "href");
+//		List<Page> pages = listPage.fetchPages(attr);
+//		
+//		pages.forEach(p -> {
+//			LOGGER.info("insert into site_pages values ('" + UUID.randomUUID().toString() + "', '" + p.getUrl() + "', 2, 3, 8, 801, null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);");
+//		});
 		
-		PageAttr attr = new PageAttr("div#main div#blog-archives table td a", "href");
-		List<Page> pages = listPage.fetchPages(attr);
+		/**************************** martinfowler ****************************/
+		Map<String, PageAttr> attrMap = new HashMap<>();
+		attrMap.put("article_title", new PageAttr("div#content div.pattern h1", null, 3));
+		attrMap.put("article_summary", new PageAttr("div#content div.pattern p.intent", null, 1));
+		attrMap.put("article_content", new PageAttr("div#content div.pattern", null, 1));
 		
-		pages.forEach(p -> {
-			LOGGER.info("insert into site_pages values ('" + UUID.randomUUID().toString() + "', '" + p.getUrl() + "', 2, 3, 8, 801, null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);");
-		});
+		Page page = new HttpClientHtmlPage("https://martinfowler.com/eaaDev/EventSourcing.html");
+		WebEntity entity = page.fetchEntity(attrMap);
+		LOGGER.info(entity.toString());
 		
 //		for(int i = 0; i < 10; i++) {
 //			System.out.println(UUID.randomUUID().toString());

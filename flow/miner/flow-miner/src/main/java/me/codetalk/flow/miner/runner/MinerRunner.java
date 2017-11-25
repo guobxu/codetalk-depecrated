@@ -379,6 +379,7 @@ public class MinerRunner implements CommandLineRunner {
 		entityVO.setEntityTypeId(entityTypeId);
 		entityVO.setPageUrl(we.getUrl());
 		entityVO.setSite(siteName);
+		entityVO.setSiteHome(we.getSite());
 		entityVO.setSiteId(siteId);
 		entityVO.setCreateDate(new Timestamp(System.currentTimeMillis()));
 		

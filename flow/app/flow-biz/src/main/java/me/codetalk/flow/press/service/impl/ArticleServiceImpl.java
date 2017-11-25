@@ -2,8 +2,10 @@ package me.codetalk.flow.press.service.impl;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -382,6 +384,73 @@ public class ArticleServiceImpl implements IArticleService {
 		createArticle(article);
 	}
 	
+	@KafkaListener(topics = "webminer-martinfowler-article", groupId = "flow-article-martinfowler-article-migrate")
+	public void mfArticleMigrate(String msgstr) {
+		LOGGER.info("In mfArticleMigrate...Receive mesg data = " + msgstr);
+		
+		Message mesg = (Message)JsonUtils.fromJson(msgstr, Message.class);
+		Map<String, Object> data = (Map<String, Object>)mesg.getData();
+		
+		// attr list -> map
+		Map<String, String> attrsMap = attrsToMap((List)data.get("attrs"));
+		
+		Article article = new Article();
+		article.setUuid(mesg.getKey());
+		
+		String pageUrl = (String)data.get("pageUrl");
+		article.setUrl(pageUrl);
+		
+		article.setSite((String)data.get("site"));
+		String title = attrsMap.get("article_title");
+		article.setTitle( title == null ? "" : title.replaceAll("’", "'") );
+		
+		String siteHome = (String)data.get("siteHome");
+		String articleContent = attrsMap.get("article_content");
+		articleContent = completeImgUrl(articleContent, siteHome, pageUrl);
+		
+		Document doc = Jsoup.parse(articleContent);
+		articleContent = removeHtmlEls(doc, new String[]{
+				"body > h1",
+				"p.intent",
+				"div.frontMatter",
+		});
+		articleContent = articleContent.replaceAll("(<.*?)style=\".*?\"(.*?>)", "$1$2");
+		articleContent = articleContent.replaceAll("(<.*?)class=\".*?\"(.*?>)", "$1$2");
+		articleContent = articleContent.replaceAll("’", "'");
+		article.setContent(articleContent);
+		
+		String summary = attrsMap.get("article_summary");
+		article.setSummary( summary == null ? null : ( summary.length() > 300 ? summary.substring(0, 300) : summary ) );
+		
+		createArticle(article);
+	}
+	
+	private String completeImgUrl(String articleContent, String siteHome, String pageUrl) {
+		Pattern ptrn = Pattern.compile("<img .*src *= *['\"](.*?)['\"]");
+		Matcher m = ptrn.matcher(articleContent);
+		
+		if(siteHome.endsWith("/")) siteHome = siteHome.substring(0, siteHome.length() - 1);
+		String parentUrl = pageUrl.substring(0, pageUrl.lastIndexOf("/"));
+		
+		Set<String> imgSet = new HashSet<>();
+		String rt = articleContent;
+		while(m.find()) {
+			String imgsrc = m.group(1).trim();
+			if(imgsrc.startsWith("http://") || imgsrc.startsWith("https://")) continue;
+			
+			if(imgSet.contains(imgsrc)) continue;
+			imgSet.add(imgsrc);
+			
+			if(imgsrc.startsWith("/")) { // 绝对路径
+				rt = rt.replaceAll(imgsrc, siteHome + imgsrc);
+			} else { // 相对路径
+				rt = rt.replaceAll(imgsrc, parentUrl + "/" + imgsrc);
+			}
+		}
+
+		return rt;
+	}
+
 	private String extractCommonArticleTag(String rawstr) {
 		Pattern ptrn = Pattern.compile("<a .*?>(.*?)</a>");
 		Matcher m = ptrn.matcher(rawstr);

@@ -8,6 +8,8 @@ public class WebEntityVO extends WebEntity {
 
 	private String site;
 	
+	private String siteHome;
+	
 	private String entityType;
 	
 	public List<WebEntityAttr> getAttrs() {
@@ -32,6 +34,14 @@ public class WebEntityVO extends WebEntity {
 
 	public void setEntityType(String entityType) {
 		this.entityType = entityType;
+	}
+
+	public String getSiteHome() {
+		return siteHome;
+	}
+
+	public void setSiteHome(String siteHome) {
+		this.siteHome = siteHome;
 	}
 	
 	
